@@ -10,11 +10,15 @@ import {
 const { width } = Dimensions.get('screen');
 const { height } = Dimensions.get('screen');
 class Button extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
+    const { onPress, title, extraStyle } = this.props;
     return (
-      <TouchableOpacity onPress={props.onPress}>
-        <View style={{ ...styles.button, ...props.extraStyle }}>
-          <Text style={styles.text}>{props.title}</Text>
+      <TouchableOpacity onPress={onPress}>
+        <View style={{ ...styles.button, ...extraStyle }}>
+          <Text style={styles.text}>{title}</Text>
         </View>
       </TouchableOpacity>
     );

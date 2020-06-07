@@ -9,9 +9,12 @@ const { width } = Dimensions.get('screen')
 const { height } = Dimensions.get('screen')
 
 class TextInput extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return (
-      <TI placeholderTextColor='#817D7D'{...props} style={styles.textInput}>
+      <TI placeholderTextColor='#817D7D'{...this.props} style={styles.textInput}>
       </TI>
     )
   }
