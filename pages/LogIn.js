@@ -13,11 +13,8 @@ import auth from '@react-native-firebase/auth';
 import { connect } from 'react-redux';
 import { setUser as setUserAction } from '../redux/actions/userActions';
 
-
-
 const width = parseInt(Dimensions.get('screen').width)/360
 const height = parseInt(Dimensions.get('screen').height)/640
-
 
 class LogIn extends React.Component {
   constructor(props) {
