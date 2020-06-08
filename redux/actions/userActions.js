@@ -3,6 +3,13 @@ const setUser = (user) => ({
   user,
 });
 
+
+const resetUser = () => ({
+  type: 'RESET_USER',
+});
+
+
 export {
   setUser,
+  resetUser,
 }

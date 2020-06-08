@@ -12,12 +12,11 @@ const persistConfig = {
   storage: AsyncStorage,
   // Whitelist (Save Specific Reducers)
   whitelist: [
-    'userReducer',
-    
+    'user',
   ],
   // Blacklist (Don't Save Specific Reducers)
   blacklist: [
-    'counterReducer',
+    'problems'
   ],
 };
 // Middleware: Redux Persist Persisted Reducer

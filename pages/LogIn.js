@@ -15,7 +15,8 @@ import { setUser as setUserAction } from '../redux/actions/userActions';
 
 
 
-const { width, height } = Dimensions.get('screen');
+const width = parseInt(Dimensions.get('screen').width)/360
+const height = parseInt(Dimensions.get('screen').height)/640
 
 
 class LogIn extends React.Component {
@@ -32,14 +33,15 @@ class LogIn extends React.Component {
 
 
   logIn = async () => {
-    const { navigation } = this.props;
+    const { navigation,setUser } = this.props;
     const { email, password } = this.state;
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async (res) => {
         const { uid: userId, email } = res.user;
-        console.log(res)
-        //navigation.navigate('MainPage', { userId });
+        setUser(res.user);
+        navigation.navigate('HomePage');
+        
       })
       .catch(function (error) {
         if (error) {
@@ -63,6 +65,7 @@ class LogIn extends React.Component {
         <View style={styles.container}>
           <Text style={styles.headerText}>HackerrankJS</Text>
           <TextInput
+            keyboardType="email-address"
             placeholder="Email"
             onChangeText={email => this.setState({ email })}
             value={email}
@@ -77,7 +80,7 @@ class LogIn extends React.Component {
 
           <TouchableOpacity
             style={styles.forgotTextView}
-            onPress={() => onPressForgot()}>
+            onPress={() => this.onPressForgot()}>
             <Text style={styles.forgotText}>Forgot password ?</Text>
           </TouchableOpacity>
 
@@ -85,7 +88,7 @@ class LogIn extends React.Component {
 
           <TouchableOpacity
             style={(styles.forgotTextView, { alignItems: 'center' })}
-            onPress={() => onSignUp()}>
+            onPress={() => this.onSignUp()}>
             <Text style={styles.createText}>Create Account</Text>
           </TouchableOpacity>
         </View>
@@ -103,7 +106,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.015,
     color: '#051B27',
-    fontSize: (height * 13) / 640,
+    fontSize: height * 13,
   },
   createText: {
     fontFamily: 'roboto',
@@ -111,20 +114,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.035,
     color: '#051B27',
-    fontSize: (height * 14) / 640,
+    fontSize: height * 14,
   },
   forgotTextView: {
     alignItems: 'flex-end',
-    width: (width * 284) / 360,
-    height: (height * 20) / 640,
+    width: width * 284,
+    height: height * 20,
   },
   headerText: {
     alignSelf: 'center',
     fontFamily: 'roboto',
-    fontSize: (40 / 640) * height,
+    fontSize: 40 * height,
     color: '#051B27',
-    marginBottom: (36 * height) / 640,
-    marginTop: (36 * height) / 640,
+    marginBottom: 36 * height,
+    marginTop: 36 * height
   },
   container: {
     flex: 1,

@@ -5,8 +5,8 @@ import {
   Dimensions
 } from 'react-native';
 
-const { width } = Dimensions.get('screen')
-const { height } = Dimensions.get('screen')
+const  width  = parseInt(Dimensions.get('screen').width)/360;
+const  height  = parseInt(Dimensions.get('screen').height)/640
 
 class TextInput extends React.Component {
   constructor(props) {
@@ -22,13 +22,13 @@ class TextInput extends React.Component {
 
 const styles = StyleSheet.create({
   textInput: {
-    paddingLeft: 15 * width / 360,
-    marginBottom: height * 13 / 640,
+    paddingLeft: 15 * width,
+    marginBottom: height * 13,
     backgroundColor: '#E3E3E3',
     textAlign: 'left',
-    fontSize: width * 15 / 360,
-    width: width * 284 / 360,
-    height: height * 51 / 640,
+    fontSize: width * 15,
+    width: width * 284,
+    height: height * 51,
     borderRadius: 4,
   },
 });

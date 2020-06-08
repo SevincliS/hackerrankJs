@@ -1,16 +1,38 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import {connect} from 'react-redux';
 
-const Stack = createStackNavigator();
-import LogIn from './pages/LogIn'
+import {Dimensions} from 'react-native';
+import LogIn from './pages/LogIn';
+import SignUp from './pages/SignUp';
+import Forgot from './pages/Forgot';
+import HomePage from './pages/HomePage';
+
+import StackNavigator from './StackNavigator';
+
+
 class Router extends React.Component {
+  constructor(props) {
+    super(props);
+    const { user } = props;
+    this.state = {
+      initialRouteName: user.name != '' ? 'HomePage' : 'LogIn',
+    };
+  }
   render() {
+    const { initialRouteName } = this.state;
     return (
-      <Stack.Navigator>
-        <Stack.Screen name="LogIn" component={LogIn} />
-      </Stack.Navigator>
-    )
+      <StackNavigator initialRouteName={initialRouteName}></StackNavigator> 
+      );
   }
 }
 
-export default Router;
+
+const mapStateToProps = state => {
+  const {user} = state;
+  return {user};
+};
+
+export default connect(
+  mapStateToProps,
+  null,
+)(Router);

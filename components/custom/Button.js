@@ -7,8 +7,8 @@ import {
   Dimensions,
 } from 'react-native';
 
-const { width } = Dimensions.get('screen');
-const { height } = Dimensions.get('screen');
+const  width  = parseInt(Dimensions.get('screen').width)/360;
+const  height  = parseInt(Dimensions.get('screen').height)/640;
 class Button extends React.Component {
   constructor(props) {
     super(props);
@@ -27,18 +27,18 @@ class Button extends React.Component {
 
 const styles = StyleSheet.create({
   button: {
-    marginTop: (55 * height) / 640,
-    marginBottom: (12 * height) / 640,
+    marginTop: (55 * height),
+    marginBottom: (12 * height),
     backgroundColor: '#051B27',
-    fontSize: (width * 100) / 360,
-    width: (width * 284) / 360,
-    height: (height * 51) / 640,
+    fontSize: (width * 100),
+    width: (width * 284),
+    height: (height * 51),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
   },
   text: {
-    fontSize: (width * 22) / 360,
+    fontSize: (width * 22),
     color: '#fff',
   },
 });
