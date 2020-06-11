@@ -3,6 +3,8 @@ import db from '@react-native-firebase/database'
 import { connect } from 'react-redux';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Dimensions } from 'react-native';
 
+import { setCurrentProblem } from '../redux/actions/problemsActions';
+
 
 const width = parseInt(Dimensions.get('screen').width) / 360
 const height = parseInt(Dimensions.get('screen').height) / 640
@@ -42,7 +44,9 @@ class Problems extends React.Component {
   }
 
   openProblemPage = (problem) => {
-    console.log(problem);
+    const { setCurrentProblem } = this.props;
+    setCurrentProblem(problem);
+    this.props.navigation.navigate('ProblemSheet');
   }
 
   render() {
@@ -74,7 +78,7 @@ class Problems extends React.Component {
                 </View>
                 <View style={activeStyle.learnCont}>
                   <Text style={activeStyle.learnText}>
-                    {learned ? 'Learned' : 'Learn It'}
+                    {learned ? 'Learned' : 'Learn it !'}
                   </Text>
                 </View>
               </View>
@@ -226,5 +230,10 @@ mapStateToProps = state => {
     learnedProblemIds,
   }
 }
+const mapDispatchToProps = dispatch => {
+  return {
+    setCurrentProblem: (problem) => dispatch(setCurrentProblem(problem)),
+  };
+};
 
-export default connect(mapStateToProps, null)(Problems);
+export default connect(mapStateToProps, mapDispatchToProps)(Problems);

@@ -6,6 +6,7 @@ import SignUp from './pages/SignUp';
 import Forgot from './pages/Forgot';
 import HomePage from './pages/HomePage';
 import Problems from './pages/Problems';
+import ProblemSheet from './pages/ProblemSheet';
 
 const Stack = createStackNavigator();
 const height = parseInt(Dimensions.get('screen').height)/640;
@@ -38,6 +39,7 @@ class StackNavigator extends React.Component {
         <Stack.Screen name="Forgot" component={Forgot} />
         <Stack.Screen name="HomePage" component={HomePage} />
         <Stack.Screen name="Problems" component={Problems} />
+        <Stack.Screen name="ProblemSheet" component={ProblemSheet} />
       </Stack.Navigator>
     );
   }

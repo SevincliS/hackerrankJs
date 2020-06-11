@@ -15,7 +15,7 @@ import LogOutButton from '../components/custom/LogOutButton';
 import { resetUser as resetUserAction } from '../redux/actions/userActions';
 
 
-const height = Dimensions.get('screen').height / 360;
+const height = Dimensions.get('screen').height / 640;
 
 class HomePage extends Component {
   constructor(props) {
