@@ -32,21 +32,12 @@ import {
   Button,
   Clipboard,
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import Spinner from 'react-native-loading-spinner-overlay';
 
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
-import { setLearnedProblemIds } from '../redux/actions/problemsActions';
-
-import { RewardedAd, RewardedAdEventType, TestIds } from '@react-native-firebase/admob';
-
-const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-6543358689178377~8698272277';
-
-const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-  requestNonPersonalizedAdsOnly: true,
-  keywords: ['hackerrank', 'code'],
-});
+import {setLearnedProblemIds} from '../redux/actions/problemsActions';
 
 const height = Dimensions.get('screen').height / 640;
 const width = Dimensions.get('screen').width / 360;
@@ -60,8 +51,8 @@ class ProblemSheet extends React.Component {
         <HeaderBackButton
           tintColor={'#ffffff'}
           onPress={() => {
-            if (!currentProblem.learned) {
-              this.setState({ modalVisible: true });
+            if(!currentProblem.learned) {
+              this.setState({modalVisible: true});
             }
             else {
               navigation.goBack()
@@ -79,61 +70,39 @@ class ProblemSheet extends React.Component {
       modalVisible: false,
       clipboardModalVisible: false,
     };
-
-
-
-
-
-
   }
 
-
-
   componentDidMount() {
-    const { currentProblem } = this.props;
-    const { id, name, text, solution } = currentProblem;
+    const {currentProblem} = this.props;
+    const {id, name, text, solution} = currentProblem;
 
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
       fetch(solution).then(solutionText => solutionText.text()),
     ]).then(([problemText, solutionText]) => {
-      console.log({ problemText, solutionText });
-      this.setState({ problemText, solutionText });
+      console.log({problemText, solutionText});
+      this.setState({problemText, solutionText});
     });
-
-
-    this.eventListener = rewarded.onAdEvent((type, error, reward) => {
-      if (type === RewardedAdEventType.LOADED) {
-        this.setState({ showRewarded: true })
-      }
-      if (type === RewardedAdEventType.EARNED_REWARD) {
-        console.log('User earned reward of ', reward);
-      }
-    })
-
-    rewarded.load();
-
   }
 
   themes = [
-    { value: tomorrow, label: 'Tomorrow' },
-    { value: duotoneForest, label: 'Duotone Forest' },
-    { value: duotoneEarth, label: 'Duotone Earth' },
-    { value: okaidia, label: 'Okaidia' },
-    { value: atomDark, label: 'Atom Dark' },
-    { value: duotoneDark, label: 'Duotone Dark' },
-    { value: twilight, label: 'Twilight' },
-    { value: dark, label: 'Dark' },
-    { value: prism, label: 'Prism' },
-    { value: vs, label: 'Visual Studio' },
-    { value: duotoneLight, label: 'Duotone Light' },
+    {value: tomorrow, label: 'Tomorrow'},
+    {value: duotoneForest, label: 'Duotone Forest'},
+    {value: duotoneEarth, label: 'Duotone Earth'},
+    {value: okaidia, label: 'Okaidia'},
+    {value: atomDark, label: 'Atom Dark'},
+    {value: duotoneDark, label: 'Duotone Dark'},
+    {value: twilight, label: 'Twilight'},
+    {value: dark, label: 'Dark'},
+    {value: prism, label: 'Prism'},
+    {value: vs, label: 'Visual Studio'},
+    {value: duotoneLight, label: 'Duotone Light'},
   ];
 
   markAsLearned = async () => {
-    const { currentProblem, user } = this.props;
-    const { id } = currentProblem;
-    const { uid } = user;
-    rewarded.show()
+    const {currentProblem, user} = this.props;
+    const {id} = currentProblem;
+    const {uid} = user;
     let updates = {};
     updates['/learnedProblems/' + id] = true;
     db()
@@ -145,7 +114,7 @@ class ProblemSheet extends React.Component {
   writeToClipboard = text => {
     Clipboard.setString(text);
     setTimeout(() => {
-      this.setState({ clipboardModalVisible: false });
+      this.setState({clipboardModalVisible: false});      
     }, 1000);
   };
 
@@ -157,7 +126,7 @@ class ProblemSheet extends React.Component {
       modalVisible,
       clipboardModalVisible,
     } = this.state;
-    const { navigation } = this.props;
+    const {navigation} = this.props;
 
     return (
       <View>
@@ -166,26 +135,26 @@ class ProblemSheet extends React.Component {
             animationType="fade"
             transparent={true}
             visible={clipboardModalVisible}
-          >
-            <View style={styles.clipboardView}>
-              <View style={styles.clipboardModal}>
+            >
+              <View style={styles.clipboardView}>
+            <View style={styles.clipboardModal}>
                 <Text>
                   Code copied to the clipboard!
                 </Text>
-              </View>
+            </View>
             </View>
           </Modal>
           <View style={styles.textContainer}>
-            <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
+            <Text style={{fontSize: 16, fontFamily: 'roboto'}}>
               {' '}
               {problemText.split('Function Description')[0]}{' '}
             </Text>
             <Text
-              style={{ fontSize: 20, fontWeight: 'bold', fontFamily: 'roboto' }}>
+              style={{fontSize: 20, fontWeight: 'bold', fontFamily: 'roboto'}}>
               {' '}
               Function Description{' '}
             </Text>
-            <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
+            <Text style={{fontSize: 16, fontFamily: 'roboto'}}>
               {' '}
               {problemText.split('Function Description')[1]}{' '}
             </Text>
@@ -193,9 +162,9 @@ class ProblemSheet extends React.Component {
           <Picker
             mode="dropdown"
             selectedValue={selectedTheme}
-            style={{ height: 40, width: 180, alignSelf: 'flex-end' }}
+            style={{height: 40, width: 180, alignSelf: 'flex-end'}}
             onValueChange={selectedTheme => {
-              this.setState({ selectedTheme });
+              this.setState({selectedTheme});
             }}>
             {this.themes.map(theme => (
               <Picker.Item label={theme['label']} value={theme['value']} />
@@ -204,8 +173,8 @@ class ProblemSheet extends React.Component {
           <ScrollView>
             <TouchableOpacity
               onPress={() => {
-                this.setState({ clipboardModalVisible: true },
-                  this.writeToClipboard(solutionText)
+                this.setState({clipboardModalVisible: true}, 
+                this.writeToClipboard(solutionText)
                 );
               }}>
               <SyntaxHighlighter
@@ -288,16 +257,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  clipboardView: {
-    flex: 1,
+  clipboardView:{
+    flex:1,
     justifyContent: 'flex-end',
-    marginBottom: 15 * height,
-    marginLeft: 78 * width
+    marginBottom:15*height,
+    marginLeft:78*width
 
   },
-  clipboardModal: {
-    justifyContent: 'center',
-    alignItems: 'center',
+  clipboardModal:{
+    justifyContent:'center',
+    alignItems:'center',
     width: 204 * width,
     height: 26 * height,
     backgroundColor: 'white',
@@ -373,8 +342,8 @@ const styles = StyleSheet.create({
 });
 
 mapStateToProps = state => {
-  const { currentProblem } = state.problems;
-  const { user } = state;
+  const {currentProblem} = state.problems;
+  const {user} = state;
   return {
     currentProblem,
     user,

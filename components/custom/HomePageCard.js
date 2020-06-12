@@ -1,5 +1,6 @@
-import React, { Component } from 'react';
-import { Bar } from 'react-native-progress';
+import React, {Component} from 'react';
+import {Bar} from 'react-native-progress';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import {
   View,
   TouchableOpacity,
@@ -9,7 +10,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { RawButton } from 'react-native-gesture-handler';
+import {RawButton} from 'react-native-gesture-handler';
 
 const width = parseInt(Dimensions.get('screen').width) / 360;
 const height = parseInt(Dimensions.get('screen').height) / 640;
@@ -17,26 +18,25 @@ const height = parseInt(Dimensions.get('screen').height) / 640;
 class HomePageCard extends Component {
   constructor(props) {
     super(props);
-    const { item } = props;
-
-    const { matchedCount, totalCount } = item;
-    console.log(`${Math.floor(matchedCount / totalCount * 100)}%`);
-
     this.state = {
+      progress: null,
+      progressText : '',
+      progressPercentageText: '', 
+    }
+  }
+  componentDidMount() {
+    
+    const {item} = this.props;
+    const {matchedCount, totalCount} = item;
+    console.log(`${Math.floor((matchedCount / totalCount) * 100)}%`);
+    this.setState({
       progress: matchedCount / totalCount,
       progressText: `${matchedCount}/${totalCount} challenges solved.`,
       progressPercentageText: matchedCount
-        ? `${Math.floor(matchedCount / totalCount * 100)}%`
+        ? `${Math.floor((matchedCount / totalCount) * 100)}%`
         : '0%',
-    };
-  }
-  componentDidMount() {
-    /** *
-     const problemTypes = [
-      'practice','interview', 'getMoreCertificates','javascript','machineLearning', 'certificate'
-    ]; 
-     */
-
+      });
+    
     let title, color;
     switch (this.props.item.type) {
       case 'practice':
@@ -61,24 +61,32 @@ class HomePageCard extends Component {
         (title = 'Unknown Type'), (color = '#3B6978');
     }
 
-    this.setState({ title, color });
+    this.setState({title, color});
   }
 
+  
+componentDidUpdate(prevProps) {
+  if(prevProps.progress != this.props.progress) {
+    this.setState({ isLoaded: true})
+  }  
+}
+
   render() {
-    const { item } = this.props;
+    const {item} = this.props;
     const {
       progress,
       progressText,
       title,
       color,
       progressPercentageText,
+      isLoaded,
     } = this.state;
     return (
-      <View style={{ ...styles.cardView, ...{ backgroundColor: color } }}>
+      <View style={{...styles.cardView, ...{backgroundColor: color}}}>
         <View style={styles.titleView}>
           <Text style={styles.titleText}>{title}</Text>
         </View>
-        <View style={{ ...styles.barView, ...{ flexDirection: 'row' } }}>
+        <View style={{...styles.barView, ...{flexDirection: 'row'}}}>
           <Bar
             style={styles.bar}
             color={'#051B27'}
@@ -86,9 +94,14 @@ class HomePageCard extends Component {
             progress={progress}
             width={256 * width}
           />
-          <View style={styles.barTextView}>
-            <Text style={styles.barText}>{progressPercentageText}</Text>
-          </View>
+          <ShimmerPlaceHolder
+            style={styles.barTextShimmer}
+            autoRun
+            visible={progressPercentageText!=''}>
+            <View style={styles.barTextView}>
+              <Text style={styles.barText}>{progressPercentageText}</Text>
+            </View>
+          </ShimmerPlaceHolder>
         </View>
         <View style={styles.progressView}>
           <Text style={styles.progressText}>{progressText}</Text>
@@ -125,33 +138,38 @@ const styles = StyleSheet.create({
   },
   barView: {
     marginLeft: 12 * width,
-    marginBottom: 7 * height
+    marginBottom: 7 * height,
   },
   barTextView: {
     marginLeft: 6 * width,
-    marginBottom: 3 * height
+    marginBottom: 3 * height,
+  },
+  barTextShimmer: {
+    marginLeft: 6 * width,
+    marginBottom: 3 * height,
+    height: 10 * height,
+    width: 256 * width,
+    alignSelf: 'center',
   },
   barText: {
     fontFamily: 'roboto',
     fontSize: 12 * width,
-    color: '#FFFFFF'
+    color: '#FFFFFF',
   },
   bar: {
     height: 10 * height,
     width: 256 * width,
-    alignSelf: 'center'
-
+    alignSelf: 'center',
   },
   progressView: {
     height: 14 * height,
     width: 230 * width,
     marginLeft: 12 * width,
-    marginBottom: 12 * height
-
+    marginBottom: 12 * height,
   },
   progressText: {
     fontSize: 12 * height,
     color: '#FFFFFF',
-    fontFamily: 'roboto'
+    fontFamily: 'roboto',
   },
 });
