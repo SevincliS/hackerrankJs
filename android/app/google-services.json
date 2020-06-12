@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "417241406159-pdre3i8j2q3on7a0kahvlo14bh7n9r51.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.agt.hackerrankjs",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
           "client_id": "417241406159-rhcrn9hfbg8qrru6eiprfd2ojnm0k3h5.apps.googleusercontent.com",
           "client_type": 3
         }
