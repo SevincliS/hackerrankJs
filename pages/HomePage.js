@@ -20,12 +20,22 @@ const height = Dimensions.get('screen').height / 640;
 class HomePage extends Component {
   constructor(props) {
     super(props);
-
+    let problemTypes = ['practice', 'interview', 'getMoreCertificates', 'javascript', 'machineLearning', 'certificate'];
+    let problemData = {};
+    types.forEach(type => {
+      problemData[type] = {
+        learnedProblems: [],
+        type,
+        progress: null,
+        progressText: '',
+        progressPercentageText: '',
+      }
+    })
     this.state = {
-      problemData: {},
+      problemData,
       matchedProblemData: {},
+      problemTypes,
     };
-
     props.navigation.setOptions({
       headerRight: () => (
         <LogOutButton onPress={() => {
@@ -42,10 +52,7 @@ class HomePage extends Component {
 
   loadProblemData = () => {
     const { user } = this.props;
-
-    const problemTypes = [
-      'practice', 'interview', 'getMoreCertificates', 'javascript', 'machineLearning', 'certificate'
-    ];
+    const { problemTypes } = this.state;
 
     db().ref(`users/${user.uid}/learnedProblems`).once('value').then(problems => {
       let learnedProblems = Object.keys(problems.val());
@@ -53,11 +60,16 @@ class HomePage extends Component {
       problemTypes.forEach(problemType => {
         db().ref(`problems/${problemType}`).once('value').then(problems => {
           let newObj = {}
+          let matchedCount = Object.keys(problems.val()).filter(key => learnedProblems.includes(key)).length
+          let totalCount = Object.keys(problems.val()).length
           newObj[problemType] = {
             learnedProblems,
-            matchedCount: Object.keys(problems.val()).filter(key => learnedProblems.includes(key)).length,
-            totalCount: Object.keys(problems.val()).length,
             type: problemType,
+            progress: matchedCount / totalCount,
+            progressText: `${matchedCount}/${totalCount} challenges solved.`,
+            progressPercentageText: matchedCount
+              ? `${Math.floor((matchedCount / totalCount) * 100)}%`
+              : '0%',
           }
           this.setState(prevState => ({
             problemData: { ...prevState.problemData, ...newObj }

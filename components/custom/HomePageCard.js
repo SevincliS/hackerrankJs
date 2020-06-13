@@ -25,9 +25,8 @@ class HomePageCard extends Component {
     }
   }
   componentDidMount() {
-    
     const {item} = this.props;
-    const {matchedCount, totalCount} = item;
+    const {matchedCount, totalCount, progress, progressText, progressPercentageText} = item;
     console.log(`${Math.floor((matchedCount / totalCount) * 100)}%`);
     this.setState({
       progress: matchedCount / totalCount,
@@ -36,7 +35,6 @@ class HomePageCard extends Component {
         ? `${Math.floor((matchedCount / totalCount) * 100)}%`
         : '0%',
       });
-    
     let title, color;
     switch (this.props.item.type) {
       case 'practice':
