@@ -1,4 +1,4 @@
-package com.hackerrankjs;
+package com.agt.hackerrankjs;
 
 import com.facebook.react.ReactActivity;
 

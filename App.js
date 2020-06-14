@@ -1,27 +1,25 @@
 import React from 'react';
-import {
-  StyleSheet,
-} from 'react-native';
+import {StyleSheet} from 'react-native';
 
-import {
-  Colors,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 
-import { PersistGate } from 'redux-persist/integration/react';
-import { Provider } from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
+import {Provider} from 'react-redux';
 
-import { store, persistor } from './redux/store/store';
-
+import {store, persistor} from './redux/store/store';
+import {GoogleSignin} from '@react-native-community/google-signin';
 import Router from './Router.js';
-import admob, { MaxAdContentRating } from '@react-native-firebase/admob';
+import admob, {MaxAdContentRating} from '@react-native-firebase/admob';
 
-
+GoogleSignin.configure({
+  webClientId:
+    '417241406159-rhcrn9hfbg8qrru6eiprfd2ojnm0k3h5.apps.googleusercontent.com',
+});
 class App extends React.Component {
-
   constructor(props) {
-    super(props)
+    super(props);
     admob()
       .setRequestConfiguration({
         // Update all future requests suitable for parental guidance
@@ -45,12 +43,12 @@ class App extends React.Component {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <NavigationContainer>
-              <Router></Router>
+              <Router />
             </NavigationContainer>
           </PersistGate>
         </Provider>
       </>
-    )
+    );
   }
 }
 

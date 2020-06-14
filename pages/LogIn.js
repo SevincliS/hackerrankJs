@@ -1,5 +1,5 @@
 import React from 'react';
-
+import db from '@react-native-firebase/database';
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
 import {
@@ -7,14 +7,15 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  StyleSheet
+  StyleSheet,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { connect } from 'react-redux';
-import { setUser as setUserAction } from '../redux/actions/userActions';
+import {connect} from 'react-redux';
+import {setUser as setUserAction} from '../redux/actions/userActions';
+import {GoogleSignin} from '@react-native-community/google-signin';
 
-const width = parseInt(Dimensions.get('screen').width)/360
-const height = parseInt(Dimensions.get('screen').height)/640
+const width = parseInt(Dimensions.get('screen').width) / 360;
+const height = parseInt(Dimensions.get('screen').height) / 640;
 
 class LogIn extends React.Component {
   constructor(props) {
@@ -23,24 +24,58 @@ class LogIn extends React.Component {
     this.state = {
       email: '',
       password: '',
-    }
+    };
   }
 
+  onGoogleButtonPress = async () => {
+    // Get the users ID token
+    const {setUser, navigation} = this.props;
+    const {idToken} = await GoogleSignin.signIn();
+    console.log('token' + idToken);
 
-
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    console.log(googleCredential);
+    // Sign-in the user with the credential
+    auth()
+      .signInWithCredential(googleCredential)
+      .then(async(res) => {
+        const {uid, displayName: name, email} = res.user;
+        await db()
+          .ref(`users/${uid}`)
+          .once('value')
+          .then(user => {
+            console.log('user burada !!!!!');
+            console.log(user.val());
+            if (!user.val()) {
+              console.log('girdi');
+              db()
+                .ref(`users/${uid}`)
+                .set({
+                  name,
+                  email,
+                  uid,
+                  learnedProblems: {randomId: 'problemId'},
+                });
+              
+            }
+          });
+        setUser({uid, name, email});
+        navigation.navigate('HomePage');
+      });
+    return auth().signInWithCredential(googleCredential);
+  };
 
   logIn = async () => {
-    const { navigation,setUser } = this.props;
-    const { email, password } = this.state;
+    const {navigation, setUser} = this.props;
+    const {email, password} = this.state;
     auth()
       .signInWithEmailAndPassword(email, password)
-      .then(async (res) => {
-        const { uid: userId, email } = res.user;
+      .then(async res => {
         setUser(res.user);
         navigation.navigate('HomePage');
-        
       })
-      .catch(function (error) {
+      .catch(function(error) {
         if (error) {
           var errorCode = error.code;
           var errorMessage = error.message;
@@ -55,8 +90,8 @@ class LogIn extends React.Component {
   };
 
   render() {
-    const { email, password } = this.state;
-    const { user, setUser } = this.props;
+    const {email, password} = this.state;
+    const {user, setUser} = this.props;
     return (
       <>
         <View style={styles.container}>
@@ -64,14 +99,14 @@ class LogIn extends React.Component {
           <TextInput
             keyboardType="email-address"
             placeholder="Email"
-            onChangeText={email => this.setState({ email })}
+            onChangeText={email => this.setState({email})}
             value={email}
           />
 
           <TextInput
             secureTextEntry
             placeholder="Password"
-            onChangeText={password => this.setState({ password })}
+            onChangeText={password => this.setState({password})}
             value={password}
           />
 
@@ -82,20 +117,27 @@ class LogIn extends React.Component {
           </TouchableOpacity>
 
           <Button title="Sign in" onPress={() => this.logIn(email, password)} />
+          <Button
+            title="Google Sign-In"
+            onPress={() =>
+              this.onGoogleButtonPress()
+                .then(() => console.log('Signed in with Google!'))
+                .catch(err => {
+                  console.log(err);
+                })
+            }
+          />
 
           <TouchableOpacity
-            style={(styles.forgotTextView, { alignItems: 'center' })}
+            style={(styles.forgotTextView, {alignItems: 'center'})}
             onPress={() => this.onSignUp()}>
             <Text style={styles.createText}>Create Account</Text>
           </TouchableOpacity>
         </View>
       </>
-    )
+    );
   }
 }
-
-
-
 
 const styles = StyleSheet.create({
   forgotText: {
@@ -124,7 +166,7 @@ const styles = StyleSheet.create({
     fontSize: 40 * height,
     color: '#051B27',
     marginBottom: 36 * height,
-    marginTop: 36 * height
+    marginTop: 36 * height,
   },
   container: {
     flex: 1,
@@ -132,16 +174,18 @@ const styles = StyleSheet.create({
   },
 });
 
-
-const mapStateToProps = (state) => {
-  const { user } = state
-  return { user };
-}
+const mapStateToProps = state => {
+  const {user} = state;
+  return {user};
+};
 
 const mapDispatchToProps = dispatch => {
   return {
-    setUser: (user) => dispatch(setUserAction(user)),
+    setUser: user => dispatch(setUserAction(user)),
   };
 };
 // Exports
-export default connect(mapStateToProps, mapDispatchToProps)(LogIn);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(LogIn);
