@@ -45,6 +45,7 @@ class HomePage extends Component {
           props.navigation.navigate('LogIn');
         }} />
       ),
+      headerLeft: () => (null)
     });
   }
 
