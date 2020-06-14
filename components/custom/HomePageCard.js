@@ -20,21 +20,27 @@ class HomePageCard extends Component {
     super(props);
     this.state = {
       progress: null,
-      progressText : '',
-      progressPercentageText: '', 
+      progressText: '',
+      progressPercentageText: '',
+      title: '',
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    const {progress, progressText, progressPercentageText} = this.props.item;
+    if (
+      progress != this.state.progress ||
+      progressText != this.state.progressText ||
+      progressPercentageText != this.state.progressPercentageText
+    ) {
+      this.setState({
+        progress,
+        progressText,
+        progressPercentageText,
+      });
     }
   }
   componentDidMount() {
-    const {item} = this.props;
-    const {matchedCount, totalCount, progress, progressText, progressPercentageText} = item;
-    console.log(`${Math.floor((matchedCount / totalCount) * 100)}%`);
-    this.setState({
-      progress: matchedCount / totalCount,
-      progressText: `${matchedCount}/${totalCount} challenges solved.`,
-      progressPercentageText: matchedCount
-        ? `${Math.floor((matchedCount / totalCount) * 100)}%`
-        : '0%',
-      });
     let title, color;
     switch (this.props.item.type) {
       case 'practice':
@@ -58,16 +64,8 @@ class HomePageCard extends Component {
       default:
         (title = 'Unknown Type'), (color = '#3B6978');
     }
-
     this.setState({title, color});
   }
-
-  
-componentDidUpdate(prevProps) {
-  if(prevProps.progress != this.props.progress) {
-    this.setState({ isLoaded: true})
-  }  
-}
 
   render() {
     const {item} = this.props;
@@ -77,34 +75,32 @@ componentDidUpdate(prevProps) {
       title,
       color,
       progressPercentageText,
-      isLoaded,
     } = this.state;
-    return (
+    return (<ShimmerPlaceHolder
+      style={styles.cardView}
+      autoRun
+      visible={progressText != '' && progress != null}>
       <View style={{...styles.cardView, ...{backgroundColor: color}}}>
-        <View style={styles.titleView}>
-          <Text style={styles.titleText}>{title}</Text>
-        </View>
-        <View style={{...styles.barView, ...{flexDirection: 'row'}}}>
-          <Bar
-            style={styles.bar}
-            color={'#051B27'}
-            height={10 * height}
-            progress={progress}
-            width={256 * width}
-          />
-          <ShimmerPlaceHolder
-            style={styles.barTextShimmer}
-            autoRun
-            visible={progressPercentageText!=''}>
+          <View style={styles.titleView}>
+            <Text style={styles.titleText}>{title}</Text>
+          </View>
+          <View style={{...styles.barView, ...{flexDirection: 'row'}}}>
+            <Bar
+              style={styles.bar}
+              color={'#051B27'}
+              height={10 * height}
+              progress={progress}
+              width={256 * width}
+            />
             <View style={styles.barTextView}>
               <Text style={styles.barText}>{progressPercentageText}</Text>
             </View>
-          </ShimmerPlaceHolder>
-        </View>
-        <View style={styles.progressView}>
-          <Text style={styles.progressText}>{progressText}</Text>
-        </View>
+          </View>
+          <View style={styles.progressView}>
+            <Text style={styles.progressText}>{progressText}</Text>
+          </View>
       </View>
+      </ShimmerPlaceHolder>
     );
   }
 }
@@ -122,6 +118,13 @@ const styles = StyleSheet.create({
     marginTop: 20 * height,
     marginHorizontal: 23 * width,
   },
+  titleShimmer:{
+    height: 23 * height,
+    width: 230 * width,
+    marginTop: 21 * height,
+    marginBottom: 27 * height,
+    marginLeft: 12 * width,
+  },
   titleView: {
     height: 46 * height,
     width: 230 * width,
@@ -134,6 +137,12 @@ const styles = StyleSheet.create({
     fontFamily: 'roboto',
     color: '#FFFFFF',
   },
+  barShimmer:{
+    height:14*width,
+    width:(width-19)*width,
+    marginHorizontal: 12 * width,
+    marginBottom: 7 * height,
+  },
   barView: {
     marginLeft: 12 * width,
     marginBottom: 7 * height,
@@ -141,13 +150,6 @@ const styles = StyleSheet.create({
   barTextView: {
     marginLeft: 6 * width,
     marginBottom: 3 * height,
-  },
-  barTextShimmer: {
-    marginLeft: 6 * width,
-    marginBottom: 3 * height,
-    height: 10 * height,
-    width: 256 * width,
-    alignSelf: 'center',
   },
   barText: {
     fontFamily: 'roboto',
@@ -158,6 +160,12 @@ const styles = StyleSheet.create({
     height: 10 * height,
     width: 256 * width,
     alignSelf: 'center',
+  },
+  progressViewShimmer:{
+    height: 14 * height,
+    width: 230 * width,
+    marginLeft: 12 * width,
+    marginBottom: 12 * height,
   },
   progressView: {
     height: 14 * height,

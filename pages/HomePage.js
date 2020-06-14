@@ -21,15 +21,17 @@ class HomePage extends Component {
   constructor(props) {
     super(props);
     let problemTypes = ['practice', 'interview', 'getMoreCertificates', 'javascript', 'machineLearning', 'certificate'];
-    let problemData = {};
-    types.forEach(type => {
-      problemData[type] = {
-        learnedProblems: [],
-        type,
-        progress: null,
-        progressText: '',
-        progressPercentageText: '',
-      }
+    let problemData = [];
+    problemTypes.forEach(type => {
+      problemData.push(
+        {
+          learnedProblems: [],
+          type,
+          progress: null,
+          progressText: '',
+          progressPercentageText: '',
+        }
+      )
     })
     this.state = {
       problemData,
@@ -56,13 +58,12 @@ class HomePage extends Component {
 
     db().ref(`users/${user.uid}/learnedProblems`).once('value').then(problems => {
       let learnedProblems = Object.keys(problems.val());
-      console.log(problems);
-      problemTypes.forEach(problemType => {
-        db().ref(`problems/${problemType}`).once('value').then(problems => {
+      problemTypes.forEach((problemType,i) => {
+        db().ref(`problems/${problemType}`).once('value').then((problems) => {
           let newObj = {}
           let matchedCount = Object.keys(problems.val()).filter(key => learnedProblems.includes(key)).length
           let totalCount = Object.keys(problems.val()).length
-          newObj[problemType] = {
+          newObj = {
             learnedProblems,
             type: problemType,
             progress: matchedCount / totalCount,
@@ -71,10 +72,11 @@ class HomePage extends Component {
               ? `${Math.floor((matchedCount / totalCount) * 100)}%`
               : '0%',
           }
-          this.setState(prevState => ({
-            problemData: { ...prevState.problemData, ...newObj }
-          }))
 
+          this.setState(prevState => ({
+            problemData: [...prevState.problemData.slice(0,i), newObj, ...prevState.problemData.slice(i+1)]
+          }))
+          if(i==5) console.log(this.state.problemData)
         }).catch(err => console.log(err))
       })
     }).catch(err => console.log(err))
@@ -90,7 +92,6 @@ class HomePage extends Component {
   render() {
     let { problemData } = this.state;
 
-    problemData = Object.values(problemData);
 
 
     return (
