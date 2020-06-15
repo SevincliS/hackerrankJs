@@ -33,11 +33,11 @@ import {
   Clipboard,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import AnimatedLoader from "react-native-animated-loader";
 import { ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux';
 
 import { setLearnedProblemIds } from '../redux/actions/problemsActions';
+
 
 const height = Dimensions.get('screen').height / 640;
 const width = Dimensions.get('screen').width / 360;
@@ -153,19 +153,8 @@ class ProblemSheet extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View>
-        <AnimatedLoader
-          visible={visible}
-          overlayColor="rgba(255,255,255,0.75)"
-          source={
-
-
-            
-          }
-          animationStyle={styles.lottie}
-          speed={1} 
-        /> 
-        {spinner ? <ActivityIndicator size="large" color="#0000ff" /> :
+      <View style = {styles.container}>
+        {spinner ? <ActivityIndicator size="large" color="#051B27" /> :
           <ScrollView>
             <Modal
               animationType="fade"
@@ -376,9 +365,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-   lottie: {
-    width: 100,
-    height: 100
+  container:{
+    flex:1,
+    justifyContent:'center',
+    alignItems:'center'
   }
 });
 

@@ -9,6 +9,8 @@ import {
 
 const  width  = parseInt(Dimensions.get('screen').width)/360;
 const  height  = parseInt(Dimensions.get('screen').height)/640;
+
+
 class Button extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +26,10 @@ class Button extends React.Component {
     );
   }
 };
+
+
+
+
 
 const styles = StyleSheet.create({
   button: {

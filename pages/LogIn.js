@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   StyleSheet,
+  Image,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {connect} from 'react-redux';
@@ -39,7 +40,7 @@ class LogIn extends React.Component {
     // Sign-in the user with the credential
     auth()
       .signInWithCredential(googleCredential)
-      .then(async(res) => {
+      .then(async res => {
         const {uid, displayName: name, email} = res.user;
         await db()
           .ref(`users/${uid}`)
@@ -57,7 +58,6 @@ class LogIn extends React.Component {
                   uid,
                   learnedProblems: {randomId: 'problemId'},
                 });
-              
             }
           });
         setUser({uid, name, email});
@@ -93,48 +93,54 @@ class LogIn extends React.Component {
     const {email, password} = this.state;
     const {user, setUser} = this.props;
     return (
-      <>
-        <View style={styles.container}>
-          <Text style={styles.headerText}>HackerrankJS</Text>
-          <TextInput
-            keyboardType="email-address"
-            placeholder="Email"
-            onChangeText={email => this.setState({email})}
-            value={email}
-          />
+      <View style={styles.container}>
+        <Text style={styles.headerText}>HackerrankJS</Text>
+        <TextInput
+          keyboardType="email-address"
+          placeholder="Email"
+          onChangeText={email => this.setState({email})}
+          value={email}
+        />
 
-          <TextInput
-            secureTextEntry
-            placeholder="Password"
-            onChangeText={password => this.setState({password})}
-            value={password}
-          />
+        <TextInput
+          secureTextEntry
+          placeholder="Password"
+          onChangeText={password => this.setState({password})}
+          value={password}
+        />
 
+        <TouchableOpacity
+          style={styles.forgotTextView}
+          onPress={() => this.onPressForgot()}>
+          <Text style={styles.forgotText}>Forgot password ?</Text>
+        </TouchableOpacity>
+
+        <Button title="Sign in" onPress={() => this.logIn(email, password)} />
+
+        <TouchableOpacity
+          style={(styles.forgotTextView, {alignItems: 'center'})}
+          onPress={() => this.onSignUp()}>
+          <Text style={styles.createText}>Create Account</Text>
+        </TouchableOpacity>
+
+        <View style={styles.googleSigninView}>
+          <Text style={styles.signInGoogleText}>or sign in with</Text>
           <TouchableOpacity
-            style={styles.forgotTextView}
-            onPress={() => this.onPressForgot()}>
-            <Text style={styles.forgotText}>Forgot password ?</Text>
-          </TouchableOpacity>
-
-          <Button title="Sign in" onPress={() => this.logIn(email, password)} />
-          <Button
-            title="Google Sign-In"
+            style={styles.googleIconView}
             onPress={() =>
               this.onGoogleButtonPress()
                 .then(() => console.log('Signed in with Google!'))
                 .catch(err => {
                   console.log(err);
                 })
-            }
-          />
-
-          <TouchableOpacity
-            style={(styles.forgotTextView, {alignItems: 'center'})}
-            onPress={() => this.onSignUp()}>
-            <Text style={styles.createText}>Create Account</Text>
+            }>
+            <Image
+              style={styles.googleIcon}
+              source={require('../images/googleicon.png')}
+            />
           </TouchableOpacity>
         </View>
-      </>
+      </View>
     );
   }
 }
@@ -171,6 +177,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+  },
+  googleSigninView: {
+    marginTop: 52 * height,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  signInGoogleText: {
+    fontSize: 13 * height,
+    fontFamily: 'roboto',
+    color: '#00132C',
+    textAlign: 'center',
+  },
+  googleIcon: {
+    width: 40.68 * width,
+    height: 43 * height,
+  },
+  googleIconView: {
+    marginTop: 6 * height,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
