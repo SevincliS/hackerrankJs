@@ -33,8 +33,8 @@ import {
   Clipboard,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Spinner from 'react-native-loading-spinner-overlay';
-
+import AnimatedLoader from "react-native-animated-loader";
+import { ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux';
 
 import { setLearnedProblemIds } from '../redux/actions/problemsActions';
@@ -64,17 +64,24 @@ class ProblemSheet extends React.Component {
     this.state = {
       selectedTheme: tomorrow,
       spinner: true,
+      visible:false,
       problemText: '',
       solutionText: '',
       modalVisible: false,
       clipboardModalVisible: false,
+      source: require("../loader.json"),
     };
   }
 
   componentDidMount() {
     const { currentProblem } = this.props;
     const { id, name, text, solution } = currentProblem;
-
+    setInterval(() => {
+      this.setState({
+        visible: !this.state.visible
+      });
+    }, 2000);
+    this.setState({ spinner: true })
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
       fetch(solution).then(solutionText => solutionText.text()),
@@ -134,7 +141,7 @@ class ProblemSheet extends React.Component {
   }
 
   render() {
-    const { spinner } = this.state;
+    const { spinner, visible, source } = this.state;
     const {
       problemText,
       functionDescription,
@@ -147,105 +154,111 @@ class ProblemSheet extends React.Component {
 
     return (
       <View>
-        { spinner ? 
-        <><Spinner
-          visible={spinner}
-          overlayColor={"rgba(220,220,220, 0.25)"}
-        />
-        <Text> Please wait while your problem data is loading.</Text></> :
-        <ScrollView>
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={clipboardModalVisible}
-          >
-            <View style={styles.clipboardView}>
-              <View style={styles.clipboardModal}>
-                <Text>
-                  Code copied to the clipboard!
-                </Text>
-              </View>
-            </View>
-          </Modal>
-          <View style={styles.textContainer}>
-            <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
-              {' '}
-              {problemText}{' '}
-            </Text>
+        <AnimatedLoader
+          visible={visible}
+          overlayColor="rgba(255,255,255,0.75)"
+          source={
+
+
             
-              <Text
-              style={{ fontSize: 20, fontWeight: 'bold', fontFamily: 'roboto' }}>
-              {' '}
-              Function Description{' '}
-            </Text>
-            <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
-              {' '}
-              {functionDescription}{' '}
-            </Text>
-          </View>
-          <Picker
-            mode="dropdown"
-            selectedValue={selectedTheme}
-            style={{ height: 40, width: 180, alignSelf: 'flex-end' }}
-            onValueChange={selectedTheme => {
-              this.setState({ selectedTheme });
-            }}>
-            {this.themes.map(theme => (
-              <Picker.Item label={theme['label']} value={theme['value']} />
-            ))}
-          </Picker>
+          }
+          animationStyle={styles.lottie}
+          speed={1} 
+        /> 
+        {spinner ? <ActivityIndicator size="large" color="#0000ff" /> :
           <ScrollView>
-            <TouchableOpacity
-              activeOpacity={1}
-              onPress={() => {
-                this.copyCode()
-              }}>
-              <SyntaxHighlighter
-                fontSize={14}
-                language="javascript"
-                style={selectedTheme}
-                highlighter={'prism' || 'hljs'}>
-                {solutionText}
-              </SyntaxHighlighter>
-            </TouchableOpacity>
-          </ScrollView>
-          <View style={styles.centeredView}>
             <Modal
               animationType="fade"
               transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-              }}>
-              <View style={styles.centeredView}>
-                <View style={styles.modalView}>
-                  <Text style={styles.modalText}>
-                    Do you want to mark this problem as "learned" ?
-                  </Text>
-                  <View style={styles.buttons}>
-                    <TouchableHighlight
-                      underlayColor="#1BA94C"
-                      style={styles.yesButton}
-                      onPress={() => {
-                        this.markAsLearned();
-                      }}>
-                      <Text style={styles.yesText}>YES</Text>
-                    </TouchableHighlight>
-                    <TouchableHighlight
-                      underlayColor="#D50D20"
-                      style={styles.noButton}
-                      onPress={() => {
-                        navigation.goBack();
-                      }}>
-                      <Text style={styles.noText}>NO</Text>
-                    </TouchableHighlight>
-                  </View>
+              visible={clipboardModalVisible}
+            >
+              <View style={styles.clipboardView}>
+                <View style={styles.clipboardModal}>
+                  <Text>
+                    Code copied to the clipboard!
+                </Text>
                 </View>
               </View>
             </Modal>
-          </View>
-        </ScrollView>
-      }
+            <View style={styles.textContainer}>
+              <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
+                {' '}
+                {problemText}{' '}
+              </Text>
+
+              <Text
+                style={{ fontSize: 20, fontWeight: 'bold', fontFamily: 'roboto' }}>
+                {' '}
+              Function Description{' '}
+              </Text>
+              <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
+                {' '}
+                {functionDescription}{' '}
+              </Text>
+            </View>
+            <Picker
+              mode="dropdown"
+              selectedValue={selectedTheme}
+              style={{ height: 40, width: 180, alignSelf: 'flex-end' }}
+              onValueChange={selectedTheme => {
+                this.setState({ selectedTheme });
+              }}>
+              {this.themes.map(theme => (
+                <Picker.Item label={theme['label']} value={theme['value']} />
+              ))}
+            </Picker>
+            <ScrollView>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => {
+                  this.copyCode()
+                }}>
+                <SyntaxHighlighter
+                  fontSize={14}
+                  language="javascript"
+                  style={selectedTheme}
+                  highlighter={'prism' || 'hljs'}>
+                  {solutionText}
+                </SyntaxHighlighter>
+              </TouchableOpacity>
+            </ScrollView>
+            <View style={styles.centeredView}>
+              <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                  Alert.alert('Modal has been closed.');
+                }}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>
+                      Do you want to mark this problem as "learned" ?
+                  </Text>
+                    <View style={styles.buttons}>
+                      <TouchableHighlight
+                        underlayColor="#1BA94C"
+                        style={styles.yesButton}
+                        onPress={() => {
+                          this.markAsLearned();
+                        }}>
+                        <Text style={styles.yesText}>YES</Text>
+                      </TouchableHighlight>
+                      <TouchableHighlight
+                        underlayColor="#D50D20"
+                        style={styles.noButton}
+                        onPress={() => {
+                          navigation.goBack();
+                        }}>
+                        <Text style={styles.noText}>NO</Text>
+                      </TouchableHighlight>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
+            </View>
+          </ScrollView>
+        }
       </View>
     );
   }
@@ -363,6 +376,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+   lottie: {
+    width: 100,
+    height: 100
+  }
 });
 
 mapStateToProps = state => {
