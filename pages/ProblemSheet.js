@@ -16,13 +16,13 @@ import {
   prism,
   duotoneEarth,
 } from 'react-syntax-highlighter/dist/esm/styles/prism/';
+import {Picker} from '@react-native-community/picker';
 import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
   Text,
-  Picker,
   StatusBar,
   Alert,
   Modal,
@@ -32,21 +32,25 @@ import {
   Button,
   Clipboard,
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { ActivityIndicator } from 'react-native'
-import { connect } from 'react-redux';
-import { RewardedAd, RewardedAdEventType, TestIds } from '@react-native-firebase/admob';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ActivityIndicator} from 'react-native';
+import {connect} from 'react-redux';
+import {
+  RewardedAd,
+  RewardedAdEventType,
+  TestIds,
+} from '@react-native-firebase/admob';
 
-const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-6543358689178377~8698272277';
+const adUnitId = __DEV__
+  ? TestIds.INTERSTITIAL
+  : 'ca-app-pub-6543358689178377~8698272277';
 
-import { addToLearnedProblemIds } from '../redux/actions/problemsActions';
-
+import {addToLearnedProblemIds} from '../redux/actions/problemsActions';
 
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
   keywords: ['hackerrank', 'code'],
 });
-
 
 const height = Dimensions.get('screen').height / 640;
 const width = Dimensions.get('screen').width / 360;
@@ -54,9 +58,7 @@ const width = Dimensions.get('screen').width / 360;
 class ProblemSheet extends React.Component {
   constructor(props) {
     super(props);
-    const { navigation, currentProblem } = props;
-
-
+    const {navigation, currentProblem} = props;
 
     navigation.setOptions({
       headerLeft: () => (
@@ -64,10 +66,9 @@ class ProblemSheet extends React.Component {
           tintColor={'#ffffff'}
           onPress={() => {
             if (!currentProblem.learned) {
-              this.setState({ modalVisible: true });
-            }
-            else {
-              navigation.goBack()
+              this.setState({modalVisible: true});
+            } else {
+              navigation.goBack();
             }
           }}
         />
@@ -76,13 +77,13 @@ class ProblemSheet extends React.Component {
 
     this.eventListener = rewarded.onAdEvent((type, error, reward) => {
       if (type === RewardedAdEventType.LOADED) {
-        this.setState({ showRewarded: true })
-        console.log('loaded')
+        this.setState({showRewarded: true});
+        console.log('loaded');
       }
       if (type === RewardedAdEventType.EARNED_REWARD) {
         console.log('User earned reward of ', reward);
       }
-    })
+    });
 
     rewarded.load();
 
@@ -93,47 +94,59 @@ class ProblemSheet extends React.Component {
       solutionText: '',
       modalVisible: false,
       clipboardModalVisible: false,
-      source: require("../loader.json"),
+      source: require('../loader.json'),
     };
   }
 
   componentDidMount() {
-    const { currentProblem } = this.props;
-    const { id, name, text, solution } = currentProblem;
-    this.setState({ spinner: true })
+    const {currentProblem} = this.props;
+    const {id, name, text, solution} = currentProblem;
+    this.setState({spinner: true});
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
       fetch(solution).then(solutionText => solutionText.text()),
     ]).then(([problemText, solutionText]) => {
-      let [splittedProblemText, functionDescription] = problemText.split('Function Description')
-      this.setState({ problemText: splittedProblemText, functionDescription, solutionText, spinner: false });
+      let [splittedProblemText, functionDescription] = problemText.split(
+        'Function Description',
+      );
+      this.setState({
+        problemText: splittedProblemText,
+        functionDescription,
+        solutionText,
+        spinner: false,
+      });
     });
   }
 
   themes = [
-    { value: tomorrow, label: 'Tomorrow' },
-    { value: duotoneForest, label: 'Duotone Forest' },
-    { value: duotoneEarth, label: 'Duotone Earth' },
-    { value: okaidia, label: 'Okaidia' },
-    { value: atomDark, label: 'Atom Dark' },
-    { value: duotoneDark, label: 'Duotone Dark' },
-    { value: twilight, label: 'Twilight' },
-    { value: dark, label: 'Dark' },
-    { value: prism, label: 'Prism' },
-    { value: vs, label: 'Visual Studio' },
-    { value: duotoneLight, label: 'Duotone Light' },
+    {value: tomorrow, label: 'Tomorrow', color: '#B15322'},
+    {value: duotoneForest, label: 'Duotone Forest', color: '#97A656'},
+    {value: duotoneEarth, label: 'Duotone Earth', color: '#8F7A37'},
+    {value: okaidia, label: 'Okaidia', color: '#477880'},
+    {value: atomDark, label: 'Atom Dark', color: '#1F8596'},
+    {value: duotoneDark, label: 'Duotone Dark', color: '#564E75'},
+    {value: twilight, label: 'Twilight', color: 'black'},
+    {value: dark, label: 'Dark', color: 'black'},
+    {value: prism, label: 'Prism', color: '#E24B71'},
+    {value: vs, label: 'Visual Studio', color: '#343286'},
+    {value: duotoneLight, label: 'Duotone Light', color: '#8289A6'},
   ];
 
   markAsLearned = async () => {
-    const { currentProblem, user, navigation, addToLearnedProblemIds } = this.props;
-    const { id } = currentProblem;
-    const { uid } = user;
+    const {
+      currentProblem,
+      user,
+      navigation,
+      addToLearnedProblemIds,
+    } = this.props;
+    const {id} = currentProblem;
+    const {uid} = user;
     let updates = {};
     updates['/learnedProblems/' + id] = true;
     await db()
       .ref(`users/${uid}`)
       .update(updates);
-    addToLearnedProblemIds(id)
+    addToLearnedProblemIds(id);
     navigation.goBack();
   };
 
@@ -141,26 +154,27 @@ class ProblemSheet extends React.Component {
     Clipboard.setString(text);
 
     setTimeout(() => {
-      this.setState({ clipboardModalVisible: false });
-      rewarded.show()
+      this.setState({clipboardModalVisible: false});
+      rewarded.show();
     }, 1000);
   };
   lastPressedMiliseconds;
   copyCode = () => {
-    let currentMs = new Date().getMilliseconds()
+    let currentMs = new Date().getMilliseconds();
     if (Math.abs(this.lastPressedMiliseconds - currentMs) < 200) {
-      const { solutionText } = this.state;
-      this.setState({
-        clipboardModalVisible: true,
-      },
-        this.writeToClipboard(solutionText)
+      const {solutionText} = this.state;
+      this.setState(
+        {
+          clipboardModalVisible: true,
+        },
+        this.writeToClipboard(solutionText),
       );
     }
     this.lastPressedMiliseconds = currentMs;
-  }
+  };
 
   render() {
-    const { spinner, visible, source } = this.state;
+    const {spinner, visible, source} = this.state;
     const {
       problemText,
       functionDescription,
@@ -169,42 +183,45 @@ class ProblemSheet extends React.Component {
       modalVisible,
       clipboardModalVisible,
     } = this.state;
-    const { navigation } = this.props;
+    const {navigation} = this.props;
 
     return (
       <View style={styles.container}>
-        {spinner ? <ActivityIndicator size="large" color="#051B27" /> :
+        {spinner ? (
+          <ActivityIndicator size="large" color="#051B27" />
+        ) : (
           <ScrollView>
             <Modal
               animationType="fade"
               transparent={true}
-              visible={clipboardModalVisible}
-            >
+              visible={clipboardModalVisible}>
               <View style={styles.clipboardView}>
                 <View style={styles.clipboardModal}>
-                  <Text>
-                    Code copied to the clipboard!
-                </Text>
+                  <Text>Code copied to the clipboard!</Text>
                 </View>
               </View>
             </Modal>
             <View style={styles.textContainer}>
               <Text
-                key={"problemText"}
-                style={{ fontSize: 16, fontFamily: 'roboto' }}>
+                key={'problemText'}
+                style={{fontSize: 16, fontFamily: 'roboto'}}>
                 {' '}
                 {problemText}{' '}
               </Text>
 
               <Text
-                key={"functionDescriptionHeader"}
-                style={{ fontSize: 20, fontWeight: 'bold', fontFamily: 'roboto' }}>
+                key={'functionDescriptionHeader'}
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  fontFamily: 'roboto',
+                }}>
                 {' '}
-              Function Description{' '}
+                Function Description{' '}
               </Text>
               <Text
-                key={"functionDescriptionText"}
-                style={{ fontSize: 16, fontFamily: 'roboto' }}>
+                key={'functionDescriptionText'}
+                style={{fontSize: 16, fontFamily: 'roboto'}}>
                 {' '}
                 {functionDescription}{' '}
               </Text>
@@ -212,21 +229,24 @@ class ProblemSheet extends React.Component {
             <Picker
               mode="dropdown"
               selectedValue={selectedTheme}
-              style={{ height: 40, width: 180, alignSelf: 'flex-end' }}
+              style={{height: 40, width: 180, alignSelf: 'flex-end'}}
               onValueChange={selectedTheme => {
-                this.setState({ selectedTheme });
+                this.setState({selectedTheme});
               }}>
               {this.themes.map(theme => (
                 <Picker.Item
                   key={theme['label']}
-                  label={theme['label']} value={theme['value']} />
+                  label={theme['label']}
+                  value={theme['value']}
+                  color={theme['color']}
+                />
               ))}
             </Picker>
             <ScrollView>
               <TouchableOpacity
                 activeOpacity={1}
                 onPress={() => {
-                  this.copyCode()
+                  this.copyCode();
                 }}>
                 <SyntaxHighlighter
                   fontSize={14}
@@ -249,7 +269,7 @@ class ProblemSheet extends React.Component {
                   <View style={styles.modalView}>
                     <Text style={styles.modalText}>
                       Do you want to mark this problem as "learned" ?
-                  </Text>
+                    </Text>
                     <View style={styles.buttons}>
                       <TouchableHighlight
                         underlayColor="#1BA94C"
@@ -273,7 +293,7 @@ class ProblemSheet extends React.Component {
               </Modal>
             </View>
           </ScrollView>
-        }
+        )}
       </View>
     );
   }
@@ -313,8 +333,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     marginBottom: 15 * height,
-    marginLeft: 78 * width
-
+    marginLeft: 78 * width,
   },
   clipboardModal: {
     justifyContent: 'center',
@@ -394,13 +413,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 });
 
 mapStateToProps = state => {
-  const { currentProblem } = state.problems;
-  const { user } = state;
+  const {currentProblem} = state.problems;
+  const {user} = state;
   return {
     currentProblem,
     user,
