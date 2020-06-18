@@ -11,11 +11,13 @@ const problemsReducer = (state = INITIAL_STATE, action) => {
     case 'SET_PROBLEMS':
       return { ...state, problems: action.problems }
     case 'SET_LEARNED_PROBLEM_IDS':
-      return { ...state, learnedProblemIds: action.ids}
+      return { ...state, learnedProblemIds: action.ids }
     case 'SET_CURRENT_PROBLEM':
       return { ...state, currentProblem: action.problem }
     case 'SET_CURRENT_PROBLEM_TYPE':
       return { ...state, currentProblemType: action.problemType }
+    case 'ADD_TO_LEARNED_PROBLEM_IDS':
+      return { ...state, learnedProblemIds: [...state.learnedProblemIds, action.problemId] }
     default:
       return state
   }

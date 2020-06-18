@@ -18,10 +18,15 @@ const setCurrentProblemType = (problemType) => ({
   problemType,
 });
 
+const addToLearnedProblemIds = problemId => ({
+  type: 'ADD_TO_LEARNED_PROBLEM_IDS',
+  problemId,
+})
 
 export {
   setProblems,
   setLearnedProblemIds,
   setCurrentProblem,  
   setCurrentProblemType,
+  addToLearnedProblemIds
 }

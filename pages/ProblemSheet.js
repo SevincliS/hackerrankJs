@@ -36,7 +36,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux';
 
-import { setLearnedProblemIds } from '../redux/actions/problemsActions';
+import { addToLearnedProblemIds } from '../redux/actions/problemsActions';
 
 
 const height = Dimensions.get('screen').height / 640;
@@ -46,6 +46,7 @@ class ProblemSheet extends React.Component {
   constructor(props) {
     super(props);
     const { navigation, currentProblem } = props;
+    
     navigation.setOptions({
       headerLeft: () => (
         <HeaderBackButton
@@ -61,10 +62,10 @@ class ProblemSheet extends React.Component {
         />
       ),
     });
+    
     this.state = {
       selectedTheme: tomorrow,
       spinner: true,
-      visible:false,
       problemText: '',
       solutionText: '',
       modalVisible: false,
@@ -76,11 +77,6 @@ class ProblemSheet extends React.Component {
   componentDidMount() {
     const { currentProblem } = this.props;
     const { id, name, text, solution } = currentProblem;
-    setInterval(() => {
-      this.setState({
-        visible: !this.state.visible
-      });
-    }, 2000);
     this.setState({ spinner: true })
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
@@ -106,14 +102,15 @@ class ProblemSheet extends React.Component {
   ];
 
   markAsLearned = async () => {
-    const { currentProblem, user } = this.props;
+    const { currentProblem, user, navigation, addToLearnedProblemIds } = this.props;
     const { id } = currentProblem;
     const { uid } = user;
     let updates = {};
     updates['/learnedProblems/' + id] = true;
-    db()
+    await db()
       .ref(`users/${uid}`)
       .update(updates);
+    addToLearnedProblemIds(id)
     navigation.goBack();
   };
 
@@ -153,7 +150,7 @@ class ProblemSheet extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style = {styles.container}>
+      <View style={styles.container}>
         {spinner ? <ActivityIndicator size="large" color="#051B27" /> :
           <ScrollView>
             <Modal
@@ -170,17 +167,22 @@ class ProblemSheet extends React.Component {
               </View>
             </Modal>
             <View style={styles.textContainer}>
-              <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
+              <Text
+                key={"problemText"}
+                style={{ fontSize: 16, fontFamily: 'roboto' }}>
                 {' '}
                 {problemText}{' '}
               </Text>
 
               <Text
+                key={"functionDescriptionHeader"}
                 style={{ fontSize: 20, fontWeight: 'bold', fontFamily: 'roboto' }}>
                 {' '}
               Function Description{' '}
               </Text>
-              <Text style={{ fontSize: 16, fontFamily: 'roboto' }}>
+              <Text
+                key={"functionDescriptionText"}
+                style={{ fontSize: 16, fontFamily: 'roboto' }}>
                 {' '}
                 {functionDescription}{' '}
               </Text>
@@ -193,7 +195,9 @@ class ProblemSheet extends React.Component {
                 this.setState({ selectedTheme });
               }}>
               {this.themes.map(theme => (
-                <Picker.Item label={theme['label']} value={theme['value']} />
+                <Picker.Item
+                  key={theme['label']}
+                  label={theme['label']} value={theme['value']} />
               ))}
             </Picker>
             <ScrollView>
@@ -365,10 +369,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  container:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center'
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });
 
@@ -382,8 +386,8 @@ mapStateToProps = state => {
 };
 const mapDispatchToProps = dispatch => {
   return {
-    setLearnedProblemIds: problemIds =>
-      dispatch(setLearnedProblemIds(problemIds)),
+    addToLearnedProblemIds: problemId =>
+      dispatch(addToLearnedProblemIds(problemId)),
   };
 };
 
