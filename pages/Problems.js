@@ -1,6 +1,6 @@
 import React from 'react';
 import db from '@react-native-firebase/database';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
-import { setCurrentProblem } from '../redux/actions/problemsActions';
+import {setCurrentProblem} from '../redux/actions/problemsActions';
 
 const width = parseInt(Dimensions.get('screen').width) / 360;
 const height = parseInt(Dimensions.get('screen').height) / 640;
@@ -30,69 +30,68 @@ class Problems extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { learnedProblemIds } = this.props;
+    const {learnedProblemIds} = this.props;
 
     if (learnedProblemIds.length != prevProps.learnedProblemIds.length) {
-      this.loadProblems()
+      this.loadProblems();
     }
   }
 
   loadProblems = () => {
-    const { currentProblemType, learnedProblemIds } = this.props;
+    const {currentProblemType, learnedProblemIds} = this.props;
     db()
       .ref(`problems/${currentProblemType}`)
       .once('value')
       .then(problems => {
         let stateProblems = [];
-        let problemCount = Object.entries(problems.val()).length
+        let problemCount = Object.entries(problems.val()).length;
         for (let i = 0; i < problemCount; i++) {
           stateProblems.push({
-            difficulty: "Easy",
+            difficulty: 'Easy',
             difficultyPoint: 10,
-            name: "", learned: false,
-          })
+            name: '',
+            learned: false,
+          });
         }
-        this.setState({ problemCount, problems: stateProblems }, () => {
-            Object.entries(problems.val()).forEach(([id, value], i) => {
-              if (learnedProblemIds.includes(id)) {
-                this.setState(prevState => ({
-                  problems:
-                    [...prevState.problems.slice(0, i),
-                    { ...value, learned: true },
-                    ...prevState.problems.slice(i + 1)]
-                }))
-              } else {
-                this.setState(prevState => ({
-                  problems:
-                    [...prevState.problems.slice(0, i),
-                    { ...value, learned: false },
-                    ...prevState.problems.slice(i + 1)]
-                }))
-              }
-            });
-        })
-
+        this.setState({problemCount, problems: stateProblems}, () => {
+          Object.entries(problems.val()).forEach(([id, value], i) => {
+            if (learnedProblemIds.includes(id)) {
+              this.setState(prevState => ({
+                problems: [
+                  ...prevState.problems.slice(0, i),
+                  {...value, learned: true},
+                  ...prevState.problems.slice(i + 1),
+                ],
+              }));
+            } else {
+              this.setState(prevState => ({
+                problems: [
+                  ...prevState.problems.slice(0, i),
+                  {...value, learned: false},
+                  ...prevState.problems.slice(i + 1),
+                ],
+              }));
+            }
+          });
+        });
       });
   };
 
   openProblemPage = problem => {
-    const { setCurrentProblem } = this.props;
-    setCurrentProblem(problem);    
+    const {setCurrentProblem} = this.props;
+    setCurrentProblem(problem);
     this.props.navigation.navigate('ProblemSheet');
-    const pushAction = StackActions.push('LogIn');
-
   };
 
   render() {
-    const { problems, problemCount } = this.state;
+    const {problems, problemCount} = this.state;
     return (
       <ScrollView horizontal={false}>
         {problems.map((problem, index) => {
-          let { difficulty, difficultyPoint, name, learned } = problem;
+          let {difficulty, difficultyPoint, name, learned} = problem;
           let activeStyle = learned ? learnedStyle : unLearnedStyle;
           difficulty = difficulty.toLowerCase();
           return (
-
             <TouchableOpacity
               onPress={() => this.openProblemPage(problem)}
               key={index}
@@ -109,9 +108,9 @@ class Problems extends React.Component {
                         style={{
                           ...activeStyle.textDiff,
                           ...styles[
-                          difficulty == 'easy'
-                            ? 'easy'
-                            : difficulty == 'medium'
+                            difficulty == 'easy'
+                              ? 'easy'
+                              : difficulty == 'medium'
                               ? 'medium'
                               : 'hard'
                           ],
@@ -274,7 +273,7 @@ const unLearnedStyle = StyleSheet.create({
 });
 
 mapStateToProps = state => {
-  const { problems, currentProblemType, learnedProblemIds } = state.problems;
+  const {problems, currentProblemType, learnedProblemIds} = state.problems;
   return {
     problems,
     currentProblemType,
