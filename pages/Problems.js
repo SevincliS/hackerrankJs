@@ -77,8 +77,10 @@ class Problems extends React.Component {
 
   openProblemPage = problem => {
     const { setCurrentProblem } = this.props;
-    setCurrentProblem(problem);
+    setCurrentProblem(problem);    
     this.props.navigation.navigate('ProblemSheet');
+    const pushAction = StackActions.push('LogIn');
+
   };
 
   render() {

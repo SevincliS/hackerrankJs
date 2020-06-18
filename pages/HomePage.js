@@ -13,6 +13,8 @@ import {
 import HomePageCard from '../components/custom/HomePageCard';
 import LogOutButton from '../components/custom/LogOutButton';
 import { resetUser as resetUserAction } from '../redux/actions/userActions';
+import { CommonActions } from '@react-navigation/native';
+
 
 
 const height = Dimensions.get('screen').height / 640;
@@ -38,11 +40,22 @@ class HomePage extends Component {
       matchedProblemData: {},
       problemTypes,
     };
+
+
+
     props.navigation.setOptions({
       headerRight: () => (
         <LogOutButton onPress={() => {
           props.resetUser();
-          props.navigation.navigate('LogIn');
+          console.log(Object.keys(props.navigation))
+          props.navigation.dispatch(
+            CommonActions.reset({
+              index: 1,
+              routes: [
+                { name: 'LogIn' },
+              ],
+            })
+          );
         }} />
       ),
       headerLeft: () => (null)
@@ -59,7 +72,7 @@ class HomePage extends Component {
 
     db().ref(`users/${user.uid}/learnedProblems`).once('value').then(problems => {
       let learnedProblems = Object.keys(problems.val());
-      problemTypes.forEach((problemType,i) => {
+      problemTypes.forEach((problemType, i) => {
         db().ref(`problems/${problemType}`).once('value').then((problems) => {
           let newObj = {}
           let matchedCount = Object.keys(problems.val()).filter(key => learnedProblems.includes(key)).length
@@ -75,7 +88,7 @@ class HomePage extends Component {
           }
 
           this.setState(prevState => ({
-            problemData: [...prevState.problemData.slice(0,i), newObj, ...prevState.problemData.slice(i+1)]
+            problemData: [...prevState.problemData.slice(0, i), newObj, ...prevState.problemData.slice(i + 1)]
           }))
         }).catch(err => console.log(err))
       })
