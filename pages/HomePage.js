@@ -13,7 +13,7 @@ import {
 import HomePageCard from '../components/custom/HomePageCard';
 import LogOutButton from '../components/custom/LogOutButton';
 import { resetUser as resetUserAction } from '../redux/actions/userActions';
-import { StackActions } from '@react-navigation/native';
+import { CommonActions } from '@react-navigation/native';
 
 
 
@@ -41,11 +41,21 @@ class HomePage extends Component {
       problemTypes,
     };
 
+
+
     props.navigation.setOptions({
       headerRight: () => (
         <LogOutButton onPress={() => {
           props.resetUser();
-          props.navigation.dispatch(StackActions.popToTop());
+          console.log(Object.keys(props.navigation))
+          props.navigation.dispatch(
+            CommonActions.reset({
+              index: 1,
+              routes: [
+                { name: 'LogIn' },
+              ],
+            })
+          );
         }} />
       ),
       headerLeft: () => (null)
