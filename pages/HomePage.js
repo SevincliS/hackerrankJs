@@ -3,7 +3,7 @@ import auth from '@react-native-firebase/auth';
 import db from '@react-native-firebase/database';
 import { connect } from 'react-redux';
 import {
-  View, TouchableOpacity, FlatList, Dimensions, StyleSheet
+  View, TouchableOpacity, FlatList, Dimensions, StyleSheet, BackHandler
 } from 'react-native';
 
 import {
@@ -42,12 +42,11 @@ class HomePage extends Component {
     };
 
 
-
+  
     props.navigation.setOptions({
       headerRight: () => (
         <LogOutButton onPress={() => {
           props.resetUser();
-          console.log(Object.keys(props.navigation))
           props.navigation.dispatch(
             CommonActions.reset({
               index: 1,
@@ -64,6 +63,10 @@ class HomePage extends Component {
 
   componentDidMount() {
     this.loadProblemData();
+    BackHandler.addEventListener('hardwareBackPress', () => console.log('wtfMan'));
+  }
+  componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress');
   }
 
   loadProblemData = () => {

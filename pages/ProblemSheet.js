@@ -60,12 +60,26 @@ class ProblemSheet extends React.Component {
     super(props);
     const {navigation, currentProblem} = props;
 
+
+
+
+    this.state = {
+      selectedTheme: tomorrow,
+      spinner: true,
+      problemText: '',
+      solutionText: '',
+      modalVisible: false,
+      clipboardModalVisible: false,
+      learned: currentProblem.learned,
+    };
+
+
     navigation.setOptions({
       headerLeft: () => (
         <HeaderBackButton
           tintColor={'#ffffff'}
           onPress={() => {
-            if (!currentProblem.learned) {
+            if (!this.state.learned) {
               this.setState({modalVisible: true});
             } else {
               navigation.goBack();
@@ -87,15 +101,7 @@ class ProblemSheet extends React.Component {
 
     rewarded.load();
 
-    this.state = {
-      selectedTheme: tomorrow,
-      spinner: true,
-      problemText: '',
-      solutionText: '',
-      modalVisible: false,
-      clipboardModalVisible: false,
-      source: require('../loader.json'),
-    };
+   
   }
 
   componentDidMount() {

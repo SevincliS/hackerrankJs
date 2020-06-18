@@ -1,6 +1,7 @@
 import React from 'react';
 import {Dimensions} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
+
 import LogIn from './pages/LogIn';
 import SignUp from './pages/SignUp';
 import Forgot from './pages/Forgot';

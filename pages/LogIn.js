@@ -2,6 +2,7 @@ import React from 'react';
 import db from '@react-native-firebase/database';
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
+import { StackActions } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -11,9 +12,9 @@ import {
   Image,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import {connect} from 'react-redux';
-import {setUser as setUserAction} from '../redux/actions/userActions';
-import {GoogleSignin} from '@react-native-community/google-signin';
+import { connect } from 'react-redux';
+import { setUser as setUserAction } from '../redux/actions/userActions';
+import { GoogleSignin } from '@react-native-community/google-signin';
 
 const width = parseInt(Dimensions.get('screen').width) / 360;
 const height = parseInt(Dimensions.get('screen').height) / 640;
@@ -30,13 +31,13 @@ class LogIn extends React.Component {
 
   onGoogleButtonPress = async () => {
     // Get the users ID token
-    const {setUser, navigation} = this.props;
-    const {idToken} = await GoogleSignin.signIn();
+    const { setUser, navigation } = this.props;
+    const { idToken } = await GoogleSignin.signIn();
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     auth()
       .signInWithCredential(googleCredential)
       .then(async res => {
-        const {uid, displayName: name, email} = res.user;
+        const { uid, displayName: name, email } = res.user;
         await db()
           .ref(`users/${uid}`)
           .once('value')
@@ -48,26 +49,33 @@ class LogIn extends React.Component {
                   name,
                   email,
                   uid,
-                  learnedProblems: {randomId: 'problemId'},
+                  learnedProblems: { randomId: 'problemId' },
                 });
             }
           });
-        setUser({uid, name, email});
-        navigation.navigate('HomePage');
+        setUser({ uid, name, email });
+        navigation.replace('HomePage');
       });
     return auth().signInWithCredential(googleCredential);
   };
 
+
+
+
+
+
   logIn = async () => {
-    const {navigation, setUser} = this.props;
-    const {email, password} = this.state;
+    const { navigation, setUser } = this.props;
+    const { email, password } = this.state;
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async res => {
         setUser(res.user);
-        navigation.navigate('HomePage');
+        navigation.dispatch(
+          StackActions.replace('HomePage')
+        );
       })
-      .catch(function(error) {
+      .catch(function (error) {
         if (error) {
           var errorCode = error.code;
           var errorMessage = error.message;
@@ -82,22 +90,22 @@ class LogIn extends React.Component {
   };
 
   render() {
-    const {email, password} = this.state;
-    const {user, setUser} = this.props;
+    const { email, password } = this.state;
+    const { user, setUser } = this.props;
     return (
       <View style={styles.container}>
         <Text style={styles.headerText}>HackerrankJS</Text>
         <TextInput
           keyboardType="email-address"
           placeholder="Email"
-          onChangeText={email => this.setState({email})}
+          onChangeText={email => this.setState({ email })}
           value={email}
         />
 
         <TextInput
           secureTextEntry
           placeholder="Password"
-          onChangeText={password => this.setState({password})}
+          onChangeText={password => this.setState({ password })}
           value={password}
         />
 
@@ -110,7 +118,7 @@ class LogIn extends React.Component {
         <Button title="Sign in" onPress={() => this.logIn(email, password)} />
 
         <TouchableOpacity
-          style={(styles.forgotTextView, {alignItems: 'center'})}
+          style={(styles.forgotTextView, { alignItems: 'center' })}
           onPress={() => this.onSignUp()}>
           <Text style={styles.createText}>Create Account</Text>
         </TouchableOpacity>
@@ -194,8 +202,8 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = state => {
-  const {user} = state;
-  return {user};
+  const { user } = state;
+  return { user };
 };
 
 const mapDispatchToProps = dispatch => {
