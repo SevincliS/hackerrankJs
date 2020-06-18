@@ -19,7 +19,6 @@ const height = parseInt(Dimensions.get('screen').height) / 640;
 class Problems extends React.Component {
   constructor(props) {
     super(props);
-    //console.log(props.currentProblemType, props.learnedProblemIds);
     this.state = {
       isLoaded: false,
       problems: [],

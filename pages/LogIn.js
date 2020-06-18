@@ -32,12 +32,7 @@ class LogIn extends React.Component {
     // Get the users ID token
     const {setUser, navigation} = this.props;
     const {idToken} = await GoogleSignin.signIn();
-    console.log('token' + idToken);
-
-    // Create a Google credential with the token
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    console.log(googleCredential);
-    // Sign-in the user with the credential
     auth()
       .signInWithCredential(googleCredential)
       .then(async res => {
@@ -46,10 +41,7 @@ class LogIn extends React.Component {
           .ref(`users/${uid}`)
           .once('value')
           .then(user => {
-            console.log('user burada !!!!!');
-            console.log(user.val());
             if (!user.val()) {
-              console.log('girdi');
               db()
                 .ref(`users/${uid}`)
                 .set({

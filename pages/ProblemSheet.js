@@ -35,8 +35,17 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { ActivityIndicator } from 'react-native'
 import { connect } from 'react-redux';
+import { RewardedAd, RewardedAdEventType, TestIds } from '@react-native-firebase/admob';
+
+const adUnitId = __DEV__ ? TestIds.INTERSTITIAL : 'ca-app-pub-6543358689178377~8698272277';
 
 import { addToLearnedProblemIds } from '../redux/actions/problemsActions';
+
+
+const rewarded = RewardedAd.createForAdRequest(adUnitId, {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ['hackerrank', 'code'],
+});
 
 
 const height = Dimensions.get('screen').height / 640;
@@ -46,7 +55,9 @@ class ProblemSheet extends React.Component {
   constructor(props) {
     super(props);
     const { navigation, currentProblem } = props;
-    
+
+
+
     navigation.setOptions({
       headerLeft: () => (
         <HeaderBackButton
@@ -62,7 +73,19 @@ class ProblemSheet extends React.Component {
         />
       ),
     });
-    
+
+    this.eventListener = rewarded.onAdEvent((type, error, reward) => {
+      if (type === RewardedAdEventType.LOADED) {
+        this.setState({ showRewarded: true })
+        console.log('loaded')
+      }
+      if (type === RewardedAdEventType.EARNED_REWARD) {
+        console.log('User earned reward of ', reward);
+      }
+    })
+
+    rewarded.load();
+
     this.state = {
       selectedTheme: tomorrow,
       spinner: true,
@@ -116,17 +139,16 @@ class ProblemSheet extends React.Component {
 
   writeToClipboard = text => {
     Clipboard.setString(text);
+
     setTimeout(() => {
       this.setState({ clipboardModalVisible: false });
+      rewarded.show()
     }, 1000);
   };
   lastPressedMiliseconds;
   copyCode = () => {
     let currentMs = new Date().getMilliseconds()
-    console.log({ currentMs })
-    console.log({ lastPressedMiliseconds: this.lastPressedMiliseconds })
     if (Math.abs(this.lastPressedMiliseconds - currentMs) < 200) {
-      console.log("hit")
       const { solutionText } = this.state;
       this.setState({
         clipboardModalVisible: true,

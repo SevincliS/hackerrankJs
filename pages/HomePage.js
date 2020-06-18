@@ -77,7 +77,6 @@ class HomePage extends Component {
           this.setState(prevState => ({
             problemData: [...prevState.problemData.slice(0,i), newObj, ...prevState.problemData.slice(i+1)]
           }))
-          if(i==5) console.log(this.state.problemData)
         }).catch(err => console.log(err))
       })
     }).catch(err => console.log(err))
