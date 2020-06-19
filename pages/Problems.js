@@ -32,6 +32,8 @@ class Problems extends React.Component {
   componentDidUpdate(prevProps) {
     const {learnedProblemIds} = this.props;
 
+    console.log('problems updated')
+    
     if (learnedProblemIds.length != prevProps.learnedProblemIds.length) {
       this.loadProblems();
     }

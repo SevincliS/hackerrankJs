@@ -2,8 +2,6 @@ import React from 'react';
 import db from '@react-native-firebase/database';
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
-import SplashScreen from 'react-native-splash-screen'
-import { StackActions } from '@react-navigation/native';
 import {
   View,
   Text,
@@ -28,9 +26,6 @@ class LogIn extends React.Component {
       email: '',
       password: '',
     };
-  }
-  componentDidMount(){
-    SplashScreen.hide()
   }
 
   onGoogleButtonPress = async () => {
@@ -75,9 +70,7 @@ class LogIn extends React.Component {
       .signInWithEmailAndPassword(email, password)
       .then(async res => {
         setUser(res.user);
-        navigation.dispatch(
-          StackActions.replace('HomePage')
-        );
+        navigation.replace('HomePage');
       })
       .catch(function (error) {
         if (error) {

@@ -43,7 +43,7 @@ class HomePage extends Component {
     };
 
 
-  
+
     props.navigation.setOptions({
       headerRight: () => (
         <LogOutButton onPress={() => {
@@ -63,13 +63,22 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    SplashScreen.hide()
-    this.loadProblemData();
-    BackHandler.addEventListener('hardwareBackPress', () => console.log('wtfMan'));
+    const { navigation } = this.props;
+    this._unsubscribe = navigation.addListener('focus', () => {
+      this.loadProblemData();
+    });
   }
+
+
+  componentDidUpdate() {
+    console.log('HomePage updated')
+  }
+
   componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress');
+    this._unsubscribe()
   }
+
+
 
   loadProblemData = () => {
     const { user } = this.props;

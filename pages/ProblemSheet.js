@@ -16,7 +16,7 @@ import {
   prism,
   duotoneEarth,
 } from 'react-syntax-highlighter/dist/esm/styles/prism/';
-import {Picker} from '@react-native-community/picker';
+import { Picker } from '@react-native-community/picker';
 import {
   SafeAreaView,
   StyleSheet,
@@ -32,9 +32,9 @@ import {
   Button,
   Clipboard,
 } from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {ActivityIndicator} from 'react-native';
-import {connect} from 'react-redux';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { ActivityIndicator } from 'react-native';
+import { connect } from 'react-redux';
 import {
   RewardedAd,
   RewardedAdEventType,
@@ -45,7 +45,7 @@ const adUnitId = __DEV__
   ? TestIds.INTERSTITIAL
   : 'ca-app-pub-6543358689178377~8698272277';
 
-import {addToLearnedProblemIds} from '../redux/actions/problemsActions';
+import { addToLearnedProblemIds } from '../redux/actions/problemsActions';
 
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
   requestNonPersonalizedAdsOnly: true,
@@ -58,7 +58,7 @@ const width = Dimensions.get('screen').width / 360;
 class ProblemSheet extends React.Component {
   constructor(props) {
     super(props);
-    const {navigation, currentProblem} = props;
+    const { navigation, currentProblem } = props;
 
 
 
@@ -80,7 +80,7 @@ class ProblemSheet extends React.Component {
           tintColor={'#ffffff'}
           onPress={() => {
             if (!this.state.learned) {
-              this.setState({modalVisible: true});
+              this.setState({ modalVisible: true });
             } else {
               navigation.goBack();
             }
@@ -91,7 +91,7 @@ class ProblemSheet extends React.Component {
 
     this.eventListener = rewarded.onAdEvent((type, error, reward) => {
       if (type === RewardedAdEventType.LOADED) {
-        this.setState({showRewarded: true});
+        this.setState({ showRewarded: true });
         console.log('loaded');
       }
       if (type === RewardedAdEventType.EARNED_REWARD) {
@@ -101,13 +101,13 @@ class ProblemSheet extends React.Component {
 
     rewarded.load();
 
-   
+
   }
 
   componentDidMount() {
-    const {currentProblem} = this.props;
-    const {id, name, text, solution} = currentProblem;
-    this.setState({spinner: true});
+    const { currentProblem } = this.props;
+    const { id, name, text, solution } = currentProblem;
+    this.setState({ spinner: true });
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
       fetch(solution).then(solutionText => solutionText.text()),
@@ -124,18 +124,22 @@ class ProblemSheet extends React.Component {
     });
   }
 
+  componentDidUpdate() {
+    console.log('problemsheet updated')
+  }
+
   themes = [
-    {value: tomorrow, label: 'Tomorrow', color: '#B15322'},
-    {value: duotoneForest, label: 'Duotone Forest', color: '#97A656'},
-    {value: duotoneEarth, label: 'Duotone Earth', color: '#8F7A37'},
-    {value: okaidia, label: 'Okaidia', color: '#477880'},
-    {value: atomDark, label: 'Atom Dark', color: '#1F8596'},
-    {value: duotoneDark, label: 'Duotone Dark', color: '#564E75'},
-    {value: twilight, label: 'Twilight', color: 'black'},
-    {value: dark, label: 'Dark', color: 'black'},
-    {value: prism, label: 'Prism', color: '#E24B71'},
-    {value: vs, label: 'Visual Studio', color: '#343286'},
-    {value: duotoneLight, label: 'Duotone Light', color: '#8289A6'},
+    { value: tomorrow, label: 'Tomorrow', color: '#B15322' },
+    { value: duotoneForest, label: 'Duotone Forest', color: '#97A656' },
+    { value: duotoneEarth, label: 'Duotone Earth', color: '#8F7A37' },
+    { value: okaidia, label: 'Okaidia', color: '#477880' },
+    { value: atomDark, label: 'Atom Dark', color: '#1F8596' },
+    { value: duotoneDark, label: 'Duotone Dark', color: '#564E75' },
+    { value: twilight, label: 'Twilight', color: 'black' },
+    { value: dark, label: 'Dark', color: 'black' },
+    { value: prism, label: 'Prism', color: '#E24B71' },
+    { value: vs, label: 'Visual Studio', color: '#343286' },
+    { value: duotoneLight, label: 'Duotone Light', color: '#8289A6' },
   ];
 
   markAsLearned = async () => {
@@ -145,8 +149,8 @@ class ProblemSheet extends React.Component {
       navigation,
       addToLearnedProblemIds,
     } = this.props;
-    const {id} = currentProblem;
-    const {uid} = user;
+    const { id } = currentProblem;
+    const { uid } = user;
     let updates = {};
     updates['/learnedProblems/' + id] = true;
     await db()
@@ -156,11 +160,12 @@ class ProblemSheet extends React.Component {
     navigation.goBack();
   };
 
+
   writeToClipboard = text => {
     Clipboard.setString(text);
 
     setTimeout(() => {
-      this.setState({clipboardModalVisible: false});
+      this.setState({ clipboardModalVisible: false });
       rewarded.show();
     }, 1000);
   };
@@ -168,7 +173,7 @@ class ProblemSheet extends React.Component {
   copyCode = () => {
     let currentMs = new Date().getMilliseconds();
     if (Math.abs(this.lastPressedMiliseconds - currentMs) < 200) {
-      const {solutionText} = this.state;
+      const { solutionText } = this.state;
       this.setState(
         {
           clipboardModalVisible: true,
@@ -180,7 +185,7 @@ class ProblemSheet extends React.Component {
   };
 
   render() {
-    const {spinner, visible, source} = this.state;
+    const { spinner, visible, source } = this.state;
     const {
       problemText,
       functionDescription,
@@ -189,117 +194,117 @@ class ProblemSheet extends React.Component {
       modalVisible,
       clipboardModalVisible,
     } = this.state;
-    const {navigation} = this.props;
+    const { navigation } = this.props;
 
     return (
       <View style={styles.container}>
         {spinner ? (
           <ActivityIndicator size="large" color="#051B27" />
         ) : (
-          <ScrollView>
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={clipboardModalVisible}>
-              <View style={styles.clipboardView}>
-                <View style={styles.clipboardModal}>
-                  <Text>Code copied to the clipboard!</Text>
-                </View>
-              </View>
-            </Modal>
-            <View style={styles.textContainer}>
-              <Text
-                key={'problemText'}
-                style={{fontSize: 16, fontFamily: 'roboto'}}>
-                {' '}
-                {problemText}{' '}
-              </Text>
-
-              <Text
-                key={'functionDescriptionHeader'}
-                style={{
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  fontFamily: 'roboto',
-                }}>
-                {' '}
-                Function Description{' '}
-              </Text>
-              <Text
-                key={'functionDescriptionText'}
-                style={{fontSize: 16, fontFamily: 'roboto'}}>
-                {' '}
-                {functionDescription}{' '}
-              </Text>
-            </View>
-            <Picker
-              mode="dropdown"
-              selectedValue={selectedTheme}
-              style={{height: 40, width: 180, alignSelf: 'flex-end'}}
-              onValueChange={selectedTheme => {
-                this.setState({selectedTheme});
-              }}>
-              {this.themes.map(theme => (
-                <Picker.Item
-                  key={theme['label']}
-                  label={theme['label']}
-                  value={theme['value']}
-                  color={theme['color']}
-                />
-              ))}
-            </Picker>
             <ScrollView>
-              <TouchableOpacity
-                activeOpacity={1}
-                onPress={() => {
-                  this.copyCode();
-                }}>
-                <SyntaxHighlighter
-                  fontSize={14}
-                  language="javascript"
-                  style={selectedTheme}
-                  highlighter={'prism' || 'hljs'}>
-                  {solutionText}
-                </SyntaxHighlighter>
-              </TouchableOpacity>
-            </ScrollView>
-            <View style={styles.centeredView}>
               <Modal
                 animationType="fade"
                 transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => {
-                  Alert.alert('Modal has been closed.');
-                }}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                    <Text style={styles.modalText}>
-                      Do you want to mark this problem as "learned" ?
-                    </Text>
-                    <View style={styles.buttons}>
-                      <TouchableHighlight
-                        underlayColor="#1BA94C"
-                        style={styles.yesButton}
-                        onPress={() => {
-                          this.markAsLearned();
-                        }}>
-                        <Text style={styles.yesText}>YES</Text>
-                      </TouchableHighlight>
-                      <TouchableHighlight
-                        underlayColor="#D50D20"
-                        style={styles.noButton}
-                        onPress={() => {
-                          navigation.goBack();
-                        }}>
-                        <Text style={styles.noText}>NO</Text>
-                      </TouchableHighlight>
-                    </View>
+                visible={clipboardModalVisible}>
+                <View style={styles.clipboardView}>
+                  <View style={styles.clipboardModal}>
+                    <Text>Code copied to the clipboard!</Text>
                   </View>
                 </View>
               </Modal>
-            </View>
-          </ScrollView>
-        )}
+              <View style={styles.textContainer}>
+                <Text
+                  key={'problemText'}
+                  style={{ fontSize: 16, fontFamily: 'roboto' }}>
+                  {' '}
+                  {problemText}{' '}
+                </Text>
+
+                <Text
+                  key={'functionDescriptionHeader'}
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    fontFamily: 'roboto',
+                  }}>
+                  {' '}
+                Function Description{' '}
+                </Text>
+                <Text
+                  key={'functionDescriptionText'}
+                  style={{ fontSize: 16, fontFamily: 'roboto' }}>
+                  {' '}
+                  {functionDescription}{' '}
+                </Text>
+              </View>
+              <Picker
+                mode="dropdown"
+                selectedValue={selectedTheme}
+                style={{ height: 40, width: 180, alignSelf: 'flex-end' }}
+                onValueChange={selectedTheme => {
+                  this.setState({ selectedTheme });
+                }}>
+                {this.themes.map(theme => (
+                  <Picker.Item
+                    key={theme['label']}
+                    label={theme['label']}
+                    value={theme['value']}
+                    color={theme['color']}
+                  />
+                ))}
+              </Picker>
+              <ScrollView>
+                <TouchableOpacity
+                  activeOpacity={1}
+                  onPress={() => {
+                    this.copyCode();
+                  }}>
+                  <SyntaxHighlighter
+                    fontSize={14}
+                    language="javascript"
+                    style={selectedTheme}
+                    highlighter={'prism' || 'hljs'}>
+                    {solutionText}
+                  </SyntaxHighlighter>
+                </TouchableOpacity>
+              </ScrollView>
+              <View style={styles.centeredView}>
+                <Modal
+                  animationType="fade"
+                  transparent={true}
+                  visible={modalVisible}
+                  onRequestClose={() => {
+                    Alert.alert('Modal has been closed.');
+                  }}>
+                  <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                      <Text style={styles.modalText}>
+                        Do you want to mark this problem as "learned" ?
+                    </Text>
+                      <View style={styles.buttons}>
+                        <TouchableHighlight
+                          underlayColor="#1BA94C"
+                          style={styles.yesButton}
+                          onPress={() => {
+                            this.markAsLearned();
+                          }}>
+                          <Text style={styles.yesText}>YES</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                          underlayColor="#D50D20"
+                          style={styles.noButton}
+                          onPress={() => {
+                            navigation.goBack();
+                          }}>
+                          <Text style={styles.noText}>NO</Text>
+                        </TouchableHighlight>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
+              </View>
+            </ScrollView>
+          )}
       </View>
     );
   }
@@ -424,8 +429,8 @@ const styles = StyleSheet.create({
 });
 
 mapStateToProps = state => {
-  const {currentProblem} = state.problems;
-  const {user} = state;
+  const { currentProblem } = state.problems;
+  const { user } = state;
   return {
     currentProblem,
     user,

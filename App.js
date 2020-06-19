@@ -1,5 +1,6 @@
 import React from 'react';
 import {StyleSheet} from 'react-native';
+import SplashScreen from 'react-native-splash-screen'
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 
@@ -17,7 +18,7 @@ GoogleSignin.configure({
   webClientId:
     '417241406159-rhcrn9hfbg8qrru6eiprfd2ojnm0k3h5.apps.googleusercontent.com',
 });
-class App extends React.Component {
+class App extends React.PureComponent {
   constructor(props) {
     super(props);
     admob()
@@ -35,6 +36,10 @@ class App extends React.Component {
       .then(() => {
         // Request config successfully set!
       });
+  }
+
+  componentDidMount() {
+    SplashScreen.hide() 
   }
 
   render() {
