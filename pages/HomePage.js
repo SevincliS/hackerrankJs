@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import SplashScreen from 'react-native-splash-screen'
 import auth from '@react-native-firebase/auth';
 import db from '@react-native-firebase/database';
 import { connect } from 'react-redux';
@@ -62,6 +63,7 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
+    SplashScreen.hide()
     this.loadProblemData();
     BackHandler.addEventListener('hardwareBackPress', () => console.log('wtfMan'));
   }

@@ -191,7 +191,6 @@ const learnedStyle = StyleSheet.create({
   },
 
   textDiff: {
-    fontWeight: 'bold',
     color: '#fff',
     fontSize: 10 * width,
   },
@@ -206,7 +205,7 @@ const learnedStyle = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1 * width,
+    borderWidth: 0.5 * width,
     borderRadius: 7 * width,
     borderColor: '#fff',
     width: 82 * width,
@@ -225,7 +224,7 @@ const unLearnedStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    marginTop: 20 * height,
+    marginTop: 13 * height,
     backgroundColor: '#fff',
     borderColor: '#000',
     borderWidth: 0.5 * width,
@@ -242,7 +241,6 @@ const unLearnedStyle = StyleSheet.create({
 
   textDiff: {
     fontFamily: 'roboto',
-    fontWeight: 'bold',
     color: '#000',
     fontSize: 10 * width,
   },
@@ -258,8 +256,8 @@ const unLearnedStyle = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderRadius: 7,
+    borderWidth: 0.5 * width,
+    borderRadius: 7 * width,
     borderColor: '#1BA94C',
     width: 82 * width,
     height: 27 * height,

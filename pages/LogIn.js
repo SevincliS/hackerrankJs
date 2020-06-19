@@ -2,6 +2,7 @@ import React from 'react';
 import db from '@react-native-firebase/database';
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
+import SplashScreen from 'react-native-splash-screen'
 import { StackActions } from '@react-navigation/native';
 import {
   View,
@@ -27,6 +28,9 @@ class LogIn extends React.Component {
       email: '',
       password: '',
     };
+  }
+  componentDidMount(){
+    SplashScreen.hide()
   }
 
   onGoogleButtonPress = async () => {
