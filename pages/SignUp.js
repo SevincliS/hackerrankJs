@@ -39,7 +39,7 @@ class SignUp extends Component {
         db().ref(`users/${uid}`)
           .set({name, email, uid, learnedProblems: {randomId: 'problemId'}});
         setUser({ name,email,uid });
-        navigation.navigate('HomePage');
+        navigation.replace('HomePage');
       })
       .catch(error => {
         if (error.code === 'auth/email-already-in-use') {

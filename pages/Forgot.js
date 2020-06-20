@@ -30,7 +30,7 @@ class Forgot extends Component {
   }
 
 
-  openModal = (seconds, modalText) => {
+  openAndCloseModal = (seconds, modalText) => {
     return new Promise((resolve, reject) => {
       this.setState({ visible: true, modalText }, () => {
         setTimeout(() => {
@@ -42,15 +42,15 @@ class Forgot extends Component {
   sendForgotRequest = (email) => {
     const { navigation } = this.props;
     if (email.trim() == '') {
-      this.openModal(2, 'Please enter your email')
+      this.openAndCloseModal(2, 'Please enter your email')
       return
     }
     auth().sendPasswordResetEmail(email).then(async () => {
       console.log("wtf yaaa");
-      await this.openModal(2, "E-mail is sent.Please don't forget to check your spam folder.")
+      await this.openAndCloseModal(2, "E-mail is sent.Please don't forget to check your spam folder.")
       navigation.goBack()
     }).catch(({ message }) => {
-      this.openModal(3, message.split("]")[1]);
+      this.openAndCloseModal(3, message.split("]")[1]);
     });
   }
 
@@ -63,8 +63,8 @@ class Forgot extends Component {
             animationType="fade"
             transparent={true}
             visible={visible}>
-            <View style={styles.emailSentModal}>
-              <View style={styles.emailModalText}>
+            <View style={styles.modalView}>
+              <View style={styles.modalTextView}>
                 <Text>{modalText}</Text>
               </View>
             </View>
@@ -93,12 +93,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  emailSentModal: {
+  modalView: {
     flex: 1,
     justifyContent: 'center',
     marginLeft: 78 * width,
   },
-  emailModalText: {
+  modalTextView: {
     justifyContent: 'center',
     alignItems: 'center',
     width: 204 * width,

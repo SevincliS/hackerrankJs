@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  Modal,
   StyleSheet,
   Image,
 } from 'react-native';
@@ -25,8 +26,22 @@ class LogIn extends React.Component {
     this.state = {
       email: '',
       password: '',
+      visible:false,
+      modalText:'',
     };
   }
+
+
+  openAndCloseModal = (seconds, modalText) => {
+    return new Promise((resolve, reject) => {
+      this.setState({ visible: true, modalText }, () => {
+        setTimeout(() => {
+          this.setState({ visible: false }, () => resolve('modalClosed'))
+        }, seconds * 1000)
+      })
+    })
+  }
+
 
   onGoogleButtonPress = async () => {
     // Get the users ID token
@@ -54,7 +69,7 @@ class LogIn extends React.Component {
           });
         setUser({ uid, name, email });
         navigation.replace('HomePage');
-      });
+      })
     return auth().signInWithCredential(googleCredential);
   };
 
@@ -72,12 +87,11 @@ class LogIn extends React.Component {
         setUser(res.user);
         navigation.replace('HomePage');
       })
-      .catch(function (error) {
-        if (error) {
-          var errorCode = error.code;
-          var errorMessage = error.message;
-        }
-      });
+      .catch(({ message }) => {
+        this.openAndCloseModal(2, message.split(']')[1]);
+      })
+
+
   };
   onPressForgot = () => {
     this.props.navigation.navigate('Forgot');
@@ -86,11 +100,29 @@ class LogIn extends React.Component {
     this.props.navigation.navigate('SignUp');
   };
 
+  openAndCloseModal = (seconds, modalText) => {
+    this.setState({ visible: true, modalText }, () => {
+      setTimeout(() => {
+        this.setState({ visible: false })
+      }, seconds * 1000)
+    })
+  }
+
   render() {
-    const { email, password } = this.state;
+    const { email, password, modalText, visible } = this.state;
     const { user, setUser } = this.props;
     return (
       <View style={styles.container}>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={visible}>
+          <View style={styles.modalView}>
+            <View style={styles.modalTextView}>
+              <Text>{modalText}</Text>
+            </View>
+          </View>
+        </Modal>
         <Text style={styles.headerText}>HackerrankJS</Text>
         <TextInput
           keyboardType="email-address"
@@ -196,6 +228,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  modalView: {
+    flex: 1,
+    justifyContent: 'center',
+    marginLeft: 78 * width,
+  },
+  modalTextView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 204 * width,
+    height: 50 * height,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  }
 });
 
 const mapStateToProps = state => {
