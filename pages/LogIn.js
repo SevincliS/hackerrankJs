@@ -33,13 +33,11 @@ class LogIn extends React.Component {
 
 
   openAndCloseModal = (seconds, modalText) => {
-    return new Promise((resolve, reject) => {
       this.setState({ visible: true, modalText }, () => {
         setTimeout(() => {
-          this.setState({ visible: false }, () => resolve('modalClosed'))
+          this.setState({ visible: false })
         }, seconds * 1000)
       })
-    })
   }
 
 
@@ -81,6 +79,14 @@ class LogIn extends React.Component {
   logIn = async () => {
     const { navigation, setUser } = this.props;
     const { email, password } = this.state;
+    if (email.trim() == '') {
+      this.openAndCloseModal(2, 'Please enter your email.')
+      return
+    }
+    else if (password.trim() == '') {
+      this.openAndCloseModal(2, 'Please enter your password.')
+      return
+    }
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async res => {
@@ -99,14 +105,6 @@ class LogIn extends React.Component {
   onSignUp = () => {
     this.props.navigation.navigate('SignUp');
   };
-
-  openAndCloseModal = (seconds, modalText) => {
-    this.setState({ visible: true, modalText }, () => {
-      setTimeout(() => {
-        this.setState({ visible: false })
-      }, seconds * 1000)
-    })
-  }
 
   render() {
     const { email, password, modalText, visible } = this.state;

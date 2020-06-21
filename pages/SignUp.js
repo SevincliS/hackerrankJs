@@ -1,12 +1,13 @@
-import React, {Component, useState} from 'react';
+import React, { Component, useState } from 'react';
 import auth from '@react-native-firebase/auth';
 import db from '@react-native-firebase/database';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
+  Modal,
   Text,
   StatusBar,
   Dimensions,
@@ -14,10 +15,10 @@ import {
 
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
-import {setUser as setUserAction} from '../redux/actions/userActions';
+import { setUser as setUserAction } from '../redux/actions/userActions';
 
-const width = parseInt(Dimensions.get('screen').width)/360
-const height = parseInt(Dimensions.get('screen').height)/640
+const width = parseInt(Dimensions.get('screen').width) / 360
+const height = parseInt(Dimensions.get('screen').height) / 640
 
 class SignUp extends Component {
   constructor(props) {
@@ -27,49 +28,80 @@ class SignUp extends Component {
       email: '',
       name: '',
       password: '',
+      visible: false
     };
   }
+
+  openAndCloseModal = (seconds, modalText) => {
+    this.setState({ visible: true, modalText }, () => {
+      setTimeout(() => {
+        this.setState({ visible: false })
+      }, seconds * 1000)
+    })
+  }
+
+
   register = (email, password, name) => {
-    const {navigation, setUser} = this.props;
+    const { navigation, setUser } = this.props;
+    if (name.trim() == '') {
+      this.openAndCloseModal(2, 'Please enter your name.')
+      return
+    }
+    else if (email.trim() == '') {
+      this.openAndCloseModal(2, 'Please enter your email.')
+      return
+    }
+    else if (password.trim() == '') {
+      this.openAndCloseModal(2, 'Please enter your password.')
+      return
+    }
     auth()
       .createUserWithEmailAndPassword(email, password, name)
       .then(async res => {
-        const {user} = res;
-        const {uid, email} = user;
+        const { user } = res;
+        const { uid, email } = user;
         db().ref(`users/${uid}`)
-          .set({name, email, uid, learnedProblems: {randomId: 'problemId'}});
-        setUser({ name,email,uid });
+          .set({ name, email, uid, learnedProblems: { randomId: 'problemId' } });
+        setUser({ name, email, uid });
         navigation.replace('HomePage');
       })
-      .catch(error => {
-        if (error.code === 'auth/email-already-in-use') {
-        }
-        if (error.code === 'auth/invalid-email') {
-        }
-        console.error(error);
+      .catch(({ message }) => {
+        const text = message.split(']')[1]
+        this.openAndCloseModal(2, text)
       });
   };
   render() {
-    const {name, email, password} = this.state;
+    const { name, email, password, visible, modalText } = this.state;
     return (
       <>
         <View style={styles.container}>
+          <Modal
+            onDismiss={() => this.setState({ visible: false })}
+            animationType="fade"
+            transparent={true}
+            visible={visible}>
+            <View style={styles.modalView}>
+              <View style={styles.modalTextView}>
+                <Text>{modalText}</Text>
+              </View>
+            </View>
+          </Modal>
           <TextInput
             placeholder="First & Last Name"
-            onChangeText={name => this.setState({name})}
+            onChangeText={name => this.setState({ name })}
             value={name}
           />
 
           <TextInput
             keyboardType="email-address"
             placeholder="Email"
-            onChangeText={email => this.setState({email})}
+            onChangeText={email => this.setState({ email })}
             value={email}
           />
           <TextInput
             secureTextEntry
             placeholder="Password"
-            onChangeText={password => this.setState({password})}
+            onChangeText={password => this.setState({ password })}
             value={password}
           />
           <Button
@@ -88,6 +120,27 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  modalView: {
+    flex: 1,
+    justifyContent: 'center',
+    marginLeft: 78 * width,
+  },
+  modalTextView: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 204 * width,
+    height: 50 * height,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  }
 });
 
 const mapDispatchToProps = dispatch => {
