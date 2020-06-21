@@ -7,11 +7,12 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
-  Modal,
   StyleSheet,
   Image,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
+import Modal from 'react-native-modal'
+
 import { connect } from 'react-redux';
 import { setUser as setUserAction } from '../redux/actions/userActions';
 import { GoogleSignin } from '@react-native-community/google-signin';
@@ -112,9 +113,9 @@ class LogIn extends React.Component {
     return (
       <View style={styles.container}>
         <Modal
-          animationType="fade"
-          transparent={true}
-          visible={visible}>
+          isVisible={visible}
+          onBackdropPress={() => this.setState({visible:false})}
+          >
           <View style={styles.modalView}>
             <View style={styles.modalTextView}>
               <Text>{modalText}</Text>

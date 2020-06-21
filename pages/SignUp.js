@@ -7,11 +7,12 @@ import {
   StyleSheet,
   ScrollView,
   View,
-  Modal,
   Text,
   StatusBar,
   Dimensions,
 } from 'react-native';
+import Modal from 'react-native-modal'
+
 
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
@@ -76,10 +77,8 @@ class SignUp extends Component {
       <>
         <View style={styles.container}>
           <Modal
-            onDismiss={() => this.setState({ visible: false })}
-            animationType="fade"
-            transparent={true}
-            visible={visible}>
+            isVisible={visible}
+            onBackButtonPress={() => this.setState({visible:false})}>
             <View style={styles.modalView}>
               <View style={styles.modalTextView}>
                 <Text>{modalText}</Text>

@@ -10,10 +10,10 @@ import {
   ScrollView,
   View,
   Text,
-  Modal,
   StatusBar,
   Dimensions,
 } from 'react-native';
+import Modal from 'react-native-modal'
 
 const height = parseInt(Dimensions.get('screen').height) / 640;
 const width = parseInt(Dimensions.get('screen').width) / 360;
@@ -60,9 +60,8 @@ class Forgot extends Component {
       <>
         <View style={styles.container}>
           <Modal
-            animationType="fade"
-            transparent={true}
-            visible={visible}>
+            isVisible={visible}
+            onBackdropPress= {() => this.setState({visible:false})}>
             <View style={styles.modalView}>
               <View style={styles.modalTextView}>
                 <Text>{modalText}</Text>

@@ -17,19 +17,14 @@ import {
   duotoneEarth,
 } from 'react-syntax-highlighter/dist/esm/styles/prism/';
 import { Picker } from '@react-native-community/picker';
+import Modal from 'react-native-modal'
 import {
-  SafeAreaView,
   StyleSheet,
   ScrollView,
   View,
   Text,
-  StatusBar,
-  Alert,
-  Modal,
   TouchableHighlight,
-  TextInput,
   Dimensions,
-  Button,
   Clipboard,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -203,9 +198,9 @@ class ProblemSheet extends React.Component {
         ) : (
             <ScrollView>
               <Modal
-                animationType="fade"
-                transparent={true}
-                visible={clipboardModalVisible}>
+                isVisible={clipboardModalVisible}
+                onBackdropPress={() => this.setState({ clipboardModalVisible: false })}
+                >
                 <View style={styles.clipboardView}>
                   <View style={styles.clipboardModal}>
                     <Text>Code copied to the clipboard!</Text>
@@ -270,12 +265,9 @@ class ProblemSheet extends React.Component {
               </ScrollView>
               <View style={styles.centeredView}>
                 <Modal
-                  animationType="fade"
-                  transparent={true}
-                  visible={modalVisible}
-                  onRequestClose={() => {
-                    Alert.alert('Modal has been closed.');
-                  }}>
+                  isVisible={modalVisible}
+                  onBackdropPress={() => this.setState({ modalVisible: false })}
+                  >
                   <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                       <Text style={styles.modalText}>
