@@ -144,7 +144,7 @@ class LogIn extends React.Component {
         </TouchableOpacity>
 
         <Button title="Sign in" onPress={() => this.logIn(email, password)} />
-        <Text>{warningText}</Text>
+        <Text>warningText</Text>
         <TouchableOpacity
           style={(styles.forgotTextView, { alignItems: 'center' })}
           onPress={() => this.onSignUp()}>
