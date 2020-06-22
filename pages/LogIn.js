@@ -122,7 +122,7 @@ class LogIn extends React.Component {
             </View>
           </View>
         </Modal>
-        <Text style={styles.headerText}>HackerrankJS</Text>
+        <Text style={styles.headerText}>Hackerrank JS</Text>
         <TextInput
           keyboardType="email-address"
           placeholder="Email"
@@ -144,7 +144,7 @@ class LogIn extends React.Component {
         </TouchableOpacity>
 
         <Button title="Sign in" onPress={() => this.logIn(email, password)} />
-
+        <Text>{warningText}</Text>
         <TouchableOpacity
           style={(styles.forgotTextView, { alignItems: 'center' })}
           onPress={() => this.onSignUp()}>
