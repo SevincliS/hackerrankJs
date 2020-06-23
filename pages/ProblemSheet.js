@@ -37,7 +37,7 @@ import {
 } from '@react-native-firebase/admob';
 
 const adUnitId = __DEV__
-  ? TestIds.INTERSTITIAL
+  ? TestIds.REWARDED
   : 'ca-app-pub-6543358689178377~8698272277';
 
 import { addToLearnedProblemIds } from '../redux/actions/problemsActions';
@@ -97,6 +97,7 @@ class ProblemSheet extends React.Component {
       if (type === RewardedAdEventType.EARNED_REWARD) {
         console.log('User earned reward of ', reward);
       }
+      if (!rewarded.loaded) rewarded.load()
     });
 
     rewarded.load();
