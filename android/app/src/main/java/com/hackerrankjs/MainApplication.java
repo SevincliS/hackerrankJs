@@ -1,7 +1,6 @@
 package com.agt.hackerrankjs;
-import org.devio.rn.splashscreen.SplashScreenReactPackage;
-import android.app.Application;
 import android.content.Context;
+import androidx.multidex.MultiDexApplication;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -15,7 +14,7 @@ import com.google.android.gms.ads.MobileAds;
 
 
 
-public class MainApplication extends Application implements ReactApplication {
+public class MainApplication extends MultiDexApplication implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost =
       new ReactNativeHost(this) {
