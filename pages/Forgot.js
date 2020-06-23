@@ -90,7 +90,6 @@ const styles = StyleSheet.create({
   warningText: {
     fontFamily: 'roboto',
     fontSize: 12 * width,
-    lineHeight: 14 * height
   }
 })
 
