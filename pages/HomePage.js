@@ -4,7 +4,7 @@ import auth from '@react-native-firebase/auth';
 import db from '@react-native-firebase/database';
 import { connect } from 'react-redux';
 import {
-  View, TouchableOpacity, FlatList, Dimensions, StyleSheet, BackHandler
+  View, TouchableOpacity, FlatList, Dimensions,
 } from 'react-native';
 
 import {

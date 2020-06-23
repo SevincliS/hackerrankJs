@@ -28,7 +28,7 @@ import {
   Clipboard,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 import {
   RewardedAd,
@@ -57,6 +57,11 @@ class ProblemSheet extends React.Component {
 
 
 
+
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      this.setState({ modalVisible: true })
+      return true
+    });
 
     this.state = {
       selectedTheme: tomorrow,
@@ -117,6 +122,7 @@ class ProblemSheet extends React.Component {
         spinner: false,
       });
     });
+
   }
 
   componentDidUpdate() {
@@ -164,6 +170,20 @@ class ProblemSheet extends React.Component {
       rewarded.show();
     }, 1000);
   };
+
+  componentWillUnmount() {
+    const { navigation } = this.props;
+
+    BackHandler.removeEventListener('hardwareBackPress', () => {
+      this.setState({ modalVisible: true })
+      return true
+    })
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      navigation.canGoBack() ? navigation.goBack() : BackHandler.exitApp()
+      return true
+    })
+  }
+
   lastPressedMiliseconds;
   copyCode = () => {
     let currentMs = new Date().getMilliseconds();
@@ -200,7 +220,7 @@ class ProblemSheet extends React.Component {
               <Modal
                 isVisible={clipboardModalVisible}
                 onBackdropPress={() => this.setState({ clipboardModalVisible: false })}
-                >
+              >
                 <View style={styles.clipboardView}>
                   <View style={styles.clipboardModal}>
                     <Text>Code copied to the clipboard!</Text>
@@ -214,7 +234,6 @@ class ProblemSheet extends React.Component {
                   {' '}
                   {problemText}{' '}
                 </Text>
-
                 <Text
                   key={'functionDescriptionHeader'}
                   style={{
@@ -267,7 +286,7 @@ class ProblemSheet extends React.Component {
                 <Modal
                   isVisible={modalVisible}
                   onBackdropPress={() => this.setState({ modalVisible: false })}
-                  >
+                >
                   <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                       <Text style={styles.modalText}>
