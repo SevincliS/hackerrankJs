@@ -98,7 +98,12 @@ class ProblemSheet extends React.Component {
         console.log('loaded');
       }
       if (type === RewardedAdEventType.EARNED_REWARD) {
+        const {solutionText} = this.state;
         console.log('User earned reward of ', reward);
+        this.setState({
+          clipboardModalVisible: true,
+        });
+        this.writeToClipboard(solutionText);
       }
       if (!rewarded.loaded) rewarded.load();
     });
@@ -165,11 +170,9 @@ class ProblemSheet extends React.Component {
 
   writeToClipboard = text => {
     Clipboard.setString(text);
-
     setTimeout(() => {
       this.setState({clipboardModalVisible: false});
-      rewarded.show();
-    }, 1000);
+    }, 2500);
   };
 
   componentWillUnmount() {
@@ -189,13 +192,7 @@ class ProblemSheet extends React.Component {
   copyCode = () => {
     let currentMs = new Date().getMilliseconds();
     if (Math.abs(this.lastPressedMiliseconds - currentMs) < 200) {
-      const {solutionText} = this.state;
-      this.setState(
-        {
-          clipboardModalVisible: true,
-        },
-        this.writeToClipboard(solutionText),
-      );
+      rewarded.show();
     }
     this.lastPressedMiliseconds = currentMs;
   };
