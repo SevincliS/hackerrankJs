@@ -8,10 +8,17 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
+  Image,
 } from 'react-native';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 import {setCurrentProblem} from '../redux/actions/problemsActions';
+
+import {BannerAd, BannerAdSize, TestIds} from '@react-native-firebase/admob';
+
+const adUnitId = __DEV__
+  ? TestIds.BANNER
+  : 'ca-app-pub-6543358689178377~8698272277';
 
 const width = parseInt(Dimensions.get('screen').width) / 360;
 const height = parseInt(Dimensions.get('screen').height) / 640;
@@ -19,10 +26,29 @@ const height = parseInt(Dimensions.get('screen').height) / 640;
 class Problems extends React.Component {
   constructor(props) {
     super(props);
+    const {navigation} = props;
     this.state = {
       isLoaded: false,
       problems: [],
     };
+    backButton = require('../images/Back.png');
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Image
+            style={{
+              marginLeft: 28 * width,
+              width: width * 19,
+              height: height * 16.8,
+            }}
+            source={backButton}
+          />
+        </TouchableOpacity>
+      ),
+    });
   }
 
   componentDidMount() {
@@ -31,7 +57,7 @@ class Problems extends React.Component {
 
   componentDidUpdate(prevProps) {
     const {learnedProblemIds} = this.props;
-    console.log('problems updated')
+    console.log('problems updated');
     if (learnedProblemIds.length != prevProps.learnedProblemIds.length) {
       this.loadProblems();
     }
@@ -83,8 +109,16 @@ class Problems extends React.Component {
     this.props.navigation.navigate('ProblemSheet');
   };
 
+  getEasyCss = learned => {
+    if (!learned) {
+      return 'unLearnedEasy';
+    } else {
+      return 'easy';
+    }
+  };
   render() {
     const {problems, problemCount} = this.state;
+    const {status} = this.props;
     return (
       <ScrollView horizontal={false}>
         {problems.map((problem, index) => {
@@ -92,45 +126,58 @@ class Problems extends React.Component {
           let activeStyle = learned ? learnedStyle : unLearnedStyle;
           difficulty = difficulty.toLowerCase();
           return (
-            <TouchableOpacity
-              onPress={() => this.openProblemPage(problem)}
-              key={index}
-              style={styles.container}>
-              <ShimmerPlaceHolder
-                style={styles.shimmerProblems}
-                autoRun
-                visible={name != ''}>
-                <View style={activeStyle.card}>
-                  <View style={styles.texts}>
-                    <Text style={activeStyle.textName}>{name}</Text>
-                    <View style={styles.description}>
-                      <Text
-                        style={{
-                          ...activeStyle.textDiff,
-                          ...styles[
-                            difficulty == 'easy'
-                              ? 'easy'
-                              : difficulty == 'medium'
-                              ? 'medium'
-                              : 'hard'
-                          ],
-                        }}>
-                        {problem.difficulty}
-                      </Text>
-                      <Text style={activeStyle.textProbDiff}>
-                        {' '}
-                        , Problem Difficulty: {difficultyPoint}
+            <>
+              <TouchableOpacity
+                onPress={() => this.openProblemPage(problem)}
+                key={index}
+                style={styles.container}>
+                <ShimmerPlaceHolder
+                  style={styles.shimmerProblems}
+                  autoRun
+                  visible={name != ''}>
+                  <View style={activeStyle.card}>
+                    <View style={styles.texts}>
+                      <Text style={activeStyle.textName}>{name}</Text>
+                      <View style={styles.description}>
+                        <Text
+                          style={{
+                            ...activeStyle.textDiff,
+                            ...styles[
+                              difficulty == 'easy'
+                                ? this.getEasyCss(learned)
+                                : difficulty == 'medium'
+                                ? 'medium'
+                                : 'hard'
+                            ],
+                          }}>
+                          {problem.difficulty}
+                        </Text>
+                        <Text style={activeStyle.textProbDiff}>
+                          {' '}
+                          , Problem Difficulty: {difficultyPoint}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={activeStyle.learnCont}>
+                      <Text style={activeStyle.learnText}>
+                        {learned ? 'Learned' : 'Learn it !'}
                       </Text>
                     </View>
                   </View>
-                  <View style={activeStyle.learnCont}>
-                    <Text style={activeStyle.learnText}>
-                      {learned ? 'Learned' : 'Learn it !'}
-                    </Text>
-                  </View>
+                </ShimmerPlaceHolder>
+              </TouchableOpacity>
+              {(index + 1) % 5 == 0 ? (
+                <View style={{marginTop: 13 * height}}>
+                  <BannerAd
+                    unitId={adUnitId}
+                    size={BannerAdSize.SMART_BANNER}
+                    requestOptions={{
+                      requestNonPersonalizedAdsOnly: status,
+                    }}
+                  />
                 </View>
-              </ShimmerPlaceHolder>
-            </TouchableOpacity>
+              ) : null}
+            </>
           );
         })}
       </ScrollView>
@@ -146,7 +193,7 @@ const styles = StyleSheet.create({
   },
   shimmerProblems: {
     borderWidth: 0.2 * width,
-    marginTop: 20 * width,
+    marginTop: 13 * height,
     borderRadius: 7 * width,
     height: 65 * height,
     width: 313 * width,
@@ -163,6 +210,9 @@ const styles = StyleSheet.create({
   easy: {
     color: '#fff',
   },
+  unLearnedEasy: {
+    color: '#1BA94C',
+  },
   medium: {
     color: '#C24600',
   },
@@ -176,7 +226,7 @@ const learnedStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    marginTop: 20 * height,
+    marginTop: 13 * height,
     backgroundColor: '#1BA94C',
     borderColor: '#000',
     borderWidth: 0.5 * width,
@@ -272,10 +322,12 @@ const unLearnedStyle = StyleSheet.create({
 
 mapStateToProps = state => {
   const {problems, currentProblemType, learnedProblemIds} = state.problems;
+  const {status} = state.consent;
   return {
     problems,
     currentProblemType,
     learnedProblemIds,
+    status,
   };
 };
 const mapDispatchToProps = dispatch => {

@@ -16,20 +16,21 @@ import {
   prism,
   duotoneEarth,
 } from 'react-syntax-highlighter/dist/esm/styles/prism/';
-import { Picker } from '@react-native-community/picker';
-import Modal from 'react-native-modal'
+import {Picker} from '@react-native-community/picker';
+import Modal from 'react-native-modal';
 import {
   StyleSheet,
   ScrollView,
   View,
+  Image,
   Text,
   TouchableHighlight,
   Dimensions,
   Clipboard,
 } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { ActivityIndicator, BackHandler } from 'react-native';
-import { connect } from 'react-redux';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ActivityIndicator, BackHandler} from 'react-native';
+import {connect} from 'react-redux';
 import {
   RewardedAd,
   RewardedAdEventType,
@@ -40,10 +41,8 @@ const adUnitId = __DEV__
   ? TestIds.REWARDED
   : 'ca-app-pub-6543358689178377~8698272277';
 
-import { addToLearnedProblemIds } from '../redux/actions/problemsActions';
-
+import {addToLearnedProblemIds} from '../redux/actions/problemsActions';
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-  requestNonPersonalizedAdsOnly: true,
   keywords: ['hackerrank', 'code'],
 });
 
@@ -53,14 +52,11 @@ const width = Dimensions.get('screen').width / 360;
 class ProblemSheet extends React.Component {
   constructor(props) {
     super(props);
-    const { navigation, currentProblem } = props;
-
-
-
+    const {navigation, currentProblem} = props;
 
     BackHandler.addEventListener('hardwareBackPress', () => {
-      this.setState({ modalVisible: true })
-      return true
+      this.setState({modalVisible: true});
+      return true;
     });
 
     this.state = {
@@ -72,43 +68,49 @@ class ProblemSheet extends React.Component {
       clipboardModalVisible: false,
       learned: currentProblem.learned,
     };
-
-
+    backButton = require('../images/Back.png');
     navigation.setOptions({
       headerLeft: () => (
-        <HeaderBackButton
-          tintColor={'#ffffff'}
+        <TouchableOpacity
           onPress={() => {
             if (!this.state.learned) {
-              this.setState({ modalVisible: true });
+              this.setState({modalVisible: true});
             } else {
               navigation.goBack();
             }
-          }}
-        />
+          }}>
+          <Image
+            style={{
+              marginLeft: 28 * width,
+              width: width * 19,
+              height: height * 16.8,
+            }}
+            source={backButton}
+          />
+        </TouchableOpacity>
       ),
     });
-
+    const {status} = this.props;
+    rewarded.requestNonPersonalizedAdsOnly = status;
     this.eventListener = rewarded.onAdEvent((type, error, reward) => {
       if (type === RewardedAdEventType.LOADED) {
-        this.setState({ showRewarded: true });
+        this.setState({showRewarded: true});
         console.log('loaded');
       }
       if (type === RewardedAdEventType.EARNED_REWARD) {
         console.log('User earned reward of ', reward);
       }
-      if (!rewarded.loaded) rewarded.load()
+      if (!rewarded.loaded) rewarded.load();
     });
 
     rewarded.load();
-
-
+    console.log(rewarded);
   }
 
   componentDidMount() {
-    const { currentProblem } = this.props;
-    const { id, name, text, solution } = currentProblem;
-    this.setState({ spinner: true });
+    const {currentProblem} = this.props;
+    const {id, name, text, solution} = currentProblem;
+    this.setState({spinner: true});
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
       fetch(solution).then(solutionText => solutionText.text()),
@@ -123,25 +125,24 @@ class ProblemSheet extends React.Component {
         spinner: false,
       });
     });
-
   }
 
   componentDidUpdate() {
-    console.log('problemsheet updated')
+    console.log('problemsheet updated');
   }
 
   themes = [
-    { value: tomorrow, label: 'Tomorrow', color: '#B15322' },
-    { value: duotoneForest, label: 'Duotone Forest', color: '#97A656' },
-    { value: duotoneEarth, label: 'Duotone Earth', color: '#8F7A37' },
-    { value: okaidia, label: 'Okaidia', color: '#477880' },
-    { value: atomDark, label: 'Atom Dark', color: '#1F8596' },
-    { value: duotoneDark, label: 'Duotone Dark', color: '#564E75' },
-    { value: twilight, label: 'Twilight', color: 'black' },
-    { value: dark, label: 'Dark', color: 'black' },
-    { value: prism, label: 'Prism', color: '#E24B71' },
-    { value: vs, label: 'Visual Studio', color: '#343286' },
-    { value: duotoneLight, label: 'Duotone Light', color: '#8289A6' },
+    {value: tomorrow, label: 'Tomorrow', color: '#B15322'},
+    {value: duotoneForest, label: 'Duotone Forest', color: '#97A656'},
+    {value: duotoneEarth, label: 'Duotone Earth', color: '#8F7A37'},
+    {value: okaidia, label: 'Okaidia', color: '#477880'},
+    {value: atomDark, label: 'Atom Dark', color: '#1F8596'},
+    {value: duotoneDark, label: 'Duotone Dark', color: '#564E75'},
+    {value: twilight, label: 'Twilight', color: 'black'},
+    {value: dark, label: 'Dark', color: 'black'},
+    {value: prism, label: 'Prism', color: '#E24B71'},
+    {value: vs, label: 'Visual Studio', color: '#343286'},
+    {value: duotoneLight, label: 'Duotone Light', color: '#8289A6'},
   ];
 
   markAsLearned = async () => {
@@ -151,8 +152,8 @@ class ProblemSheet extends React.Component {
       navigation,
       addToLearnedProblemIds,
     } = this.props;
-    const { id } = currentProblem;
-    const { uid } = user;
+    const {id} = currentProblem;
+    const {uid} = user;
     let updates = {};
     updates['/learnedProblems/' + id] = true;
     await db()
@@ -162,34 +163,33 @@ class ProblemSheet extends React.Component {
     navigation.goBack();
   };
 
-
   writeToClipboard = text => {
     Clipboard.setString(text);
 
     setTimeout(() => {
-      this.setState({ clipboardModalVisible: false });
+      this.setState({clipboardModalVisible: false});
       rewarded.show();
     }, 1000);
   };
 
   componentWillUnmount() {
-    const { navigation } = this.props;
+    const {navigation} = this.props;
 
     BackHandler.removeEventListener('hardwareBackPress', () => {
-      this.setState({ modalVisible: true })
-      return true
-    })
+      this.setState({modalVisible: true});
+      return true;
+    });
     BackHandler.addEventListener('hardwareBackPress', () => {
-      navigation.canGoBack() ? navigation.goBack() : BackHandler.exitApp()
-      return true
-    })
+      navigation.canGoBack() ? navigation.goBack() : BackHandler.exitApp();
+      return true;
+    });
   }
 
   lastPressedMiliseconds;
   copyCode = () => {
     let currentMs = new Date().getMilliseconds();
     if (Math.abs(this.lastPressedMiliseconds - currentMs) < 200) {
-      const { solutionText } = this.state;
+      const {solutionText} = this.state;
       this.setState(
         {
           clipboardModalVisible: true,
@@ -201,7 +201,7 @@ class ProblemSheet extends React.Component {
   };
 
   render() {
-    const { spinner, visible, source } = this.state;
+    const {spinner, visible, source} = this.state;
     const {
       problemText,
       functionDescription,
@@ -210,54 +210,71 @@ class ProblemSheet extends React.Component {
       modalVisible,
       clipboardModalVisible,
     } = this.state;
-    const { navigation } = this.props;
+    const {navigation} = this.props;
 
     return (
       <View style={styles.container}>
         {spinner ? (
           <ActivityIndicator size="large" color="#051B27" />
         ) : (
-            <ScrollView>
-              <Modal
-                isVisible={clipboardModalVisible}
-                onBackdropPress={() => this.setState({ clipboardModalVisible: false })}
-              >
-                <View style={styles.clipboardView}>
-                  <View style={styles.clipboardModal}>
-                    <Text>Code copied to the clipboard!</Text>
-                  </View>
+          <ScrollView>
+            <Modal
+              isVisible={clipboardModalVisible}
+              onBackdropPress={() =>
+                this.setState({clipboardModalVisible: false})
+              }>
+              <View style={styles.clipboardView}>
+                <View style={styles.clipboardModal}>
+                  <Text>Code copied to the clipboard!</Text>
                 </View>
-              </Modal>
-              <View style={styles.textContainer}>
-                <Text
-                  key={'problemText'}
-                  style={{ fontSize: 16, fontFamily: 'roboto' }}>
-                  {' '}
-                  {problemText}{' '}
-                </Text>
-                <Text
-                  key={'functionDescriptionHeader'}
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                    fontFamily: 'roboto',
-                  }}>
-                  {' '}
+              </View>
+            </Modal>
+            <View style={styles.textContainer}>
+              <Text
+                key={'problemText'}
+                style={{fontSize: 16, fontFamily: 'roboto', margin: 6 * width}}>
+                {' '}
+                {problemText}{' '}
+              </Text>
+              <Text
+                key={'functionDescriptionHeader'}
+                style={{
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                  fontFamily: 'roboto',
+                  marginHorizontal: 6 * height,
+                }}>
+                {' '}
                 Function Description{' '}
+              </Text>
+              <Text
+                key={'functionDescriptionText'}
+                style={{fontSize: 16, fontFamily: 'roboto', margin: 6 * width}}>
+                {' '}
+                {functionDescription}{' '}
+              </Text>
+            </View>
+            <View style={styles.pickerView}>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={styles.doubleTapText}>
+                  Double tap code for copy
                 </Text>
-                <Text
-                  key={'functionDescriptionText'}
-                  style={{ fontSize: 16, fontFamily: 'roboto' }}>
-                  {' '}
-                  {functionDescription}{' '}
-                </Text>
+                <Image
+                  style={styles.downArrow}
+                  source={require('../images/Down.png')}
+                />
               </View>
               <Picker
                 mode="dropdown"
                 selectedValue={selectedTheme}
-                style={{ height: 40, width: 180, alignSelf: 'flex-end' }}
+                style={{
+                  height: 40,
+                  width: 180,
+                  alignSelf: 'flex-end',
+                  marginRight: 22 * width,
+                }}
                 onValueChange={selectedTheme => {
-                  this.setState({ selectedTheme });
+                  this.setState({selectedTheme});
                 }}>
                 {this.themes.map(theme => (
                   <Picker.Item
@@ -268,55 +285,55 @@ class ProblemSheet extends React.Component {
                   />
                 ))}
               </Picker>
-              <ScrollView>
-                <TouchableOpacity
-                  activeOpacity={1}
-                  onPress={() => {
-                    this.copyCode();
-                  }}>
-                  <SyntaxHighlighter
-                    fontSize={14}
-                    language="javascript"
-                    style={selectedTheme}
-                    highlighter={'prism' || 'hljs'}>
-                    {solutionText}
-                  </SyntaxHighlighter>
-                </TouchableOpacity>
-              </ScrollView>
-              <View style={styles.centeredView}>
-                <Modal
-                  isVisible={modalVisible}
-                  onBackdropPress={() => this.setState({ modalVisible: false })}
-                >
-                  <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                      <Text style={styles.modalText}>
-                        Do you want to mark this problem as "learned" ?
+            </View>
+            <ScrollView>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => {
+                  this.copyCode();
+                }}>
+                <SyntaxHighlighter
+                  fontSize={14}
+                  language="javascript"
+                  style={selectedTheme}
+                  highlighter={'prism' || 'hljs'}>
+                  {solutionText}
+                </SyntaxHighlighter>
+              </TouchableOpacity>
+            </ScrollView>
+            <View style={styles.centeredView}>
+              <Modal
+                isVisible={modalVisible}
+                onBackdropPress={() => this.setState({modalVisible: false})}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>
+                      Do you want to mark this problem as "learned" ?
                     </Text>
-                      <View style={styles.buttons}>
-                        <TouchableHighlight
-                          underlayColor="#1BA94C"
-                          style={styles.yesButton}
-                          onPress={() => {
-                            this.markAsLearned();
-                          }}>
-                          <Text style={styles.yesText}>YES</Text>
-                        </TouchableHighlight>
-                        <TouchableHighlight
-                          underlayColor="#D50D20"
-                          style={styles.noButton}
-                          onPress={() => {
-                            navigation.goBack();
-                          }}>
-                          <Text style={styles.noText}>NO</Text>
-                        </TouchableHighlight>
-                      </View>
+                    <View style={styles.buttons}>
+                      <TouchableHighlight
+                        underlayColor="#1BA94C"
+                        style={styles.yesButton}
+                        onPress={() => {
+                          this.markAsLearned();
+                        }}>
+                        <Text style={styles.yesText}>YES</Text>
+                      </TouchableHighlight>
+                      <TouchableHighlight
+                        underlayColor="#D50D20"
+                        style={styles.noButton}
+                        onPress={() => {
+                          navigation.goBack();
+                        }}>
+                        <Text style={styles.noText}>NO</Text>
+                      </TouchableHighlight>
                     </View>
                   </View>
-                </Modal>
-              </View>
-            </ScrollView>
-          )}
+                </View>
+              </Modal>
+            </View>
+          </ScrollView>
+        )}
       </View>
     );
   }
@@ -341,6 +358,9 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     backgroundColor: '#ffffff',
+    marginHorizontal: 21 * width,
+    borderRadius: 5 * width,
+    marginTop: 21 * height,
   },
   spinnerText: {
     color: '#A9A9A9',
@@ -433,6 +453,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  doubleTapText: {
+    fontSize: 12 * height,
+    color: '#817D7D',
+    fontFamily: 'roboto',
+    alignSelf: 'center',
+    marginLeft: 22 * width,
+  },
+  pickerView: {
+    marginTop: 5 * height,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  downArrow: {
+    width: width * 8,
+    height: height * 10,
+    alignSelf: 'center',
+    marginLeft: 3 * width,
+    marginTop: 3 * height,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -441,11 +481,13 @@ const styles = StyleSheet.create({
 });
 
 mapStateToProps = state => {
-  const { currentProblem } = state.problems;
-  const { user } = state;
+  const {currentProblem} = state.problems;
+  const {user} = state;
+  const {status} = state.consent;
   return {
     currentProblem,
     user,
+    status,
   };
 };
 const mapDispatchToProps = dispatch => {

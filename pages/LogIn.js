@@ -11,11 +11,13 @@ import {
   Image,
 } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import Modal from 'react-native-modal'
+import Modal from 'react-native-modal';
 
-import { connect } from 'react-redux';
-import { setUser as setUserAction } from '../redux/actions/userActions';
-import { GoogleSignin } from '@react-native-community/google-signin';
+import {connect} from 'react-redux';
+import {setUser as setUserAction} from '../redux/actions/userActions';
+import {setConsent as setConsentAction} from '../redux/actions/consentAction';
+import {GoogleSignin} from '@react-native-community/google-signin';
+import {AdsConsent, AdsConsentStatus} from '@react-native-firebase/admob';
 
 const width = parseInt(Dimensions.get('screen').width) / 360;
 const height = parseInt(Dimensions.get('screen').height) / 640;
@@ -33,19 +35,41 @@ class LogIn extends React.Component {
     };
   }
 
-
- 
-
+  componentDidMount = async () => {
+    const consentInfo = await AdsConsent.requestInfoUpdate([
+      'pub-6543358689178377',
+    ]);
+    const {setConsent} = this.props;
+    if (consentInfo.isRequestLocationInEeaOrUnknown) {
+      const status = await AdsConsent.getStatus();
+      if (status == AdsConsentStatus.UNKNOWN) {
+        const formResult = await AdsConsent.showForm({
+          privacyPolicy: 'https://invertase.io/privacy-policy',
+          withPersonalizedAds: true,
+          withNonPersonalizedAds: true,
+        });
+        if (formResult.status == AdsConsentStatus.PERSONALIZED) {
+          setConsent({status: false});
+        } else if (formResult.status == AdsConsentStatus.NON_PERSONALIZED) {
+          setConsent({status: true});
+        }
+      } else if (status == AdsConsentStatus.PERSONALIZED) {
+        setConsent({status: false});
+      } else if (status == AdsConsentStatus.NON_PERSONALIZED) {
+        setConsent({status: true});
+      }
+    }
+  };
 
   onGoogleButtonPress = async () => {
     // Get the users ID token
-    const { setUser, navigation } = this.props;
-    const { idToken } = await GoogleSignin.signIn();
+    const {setUser, navigation} = this.props;
+    const {idToken} = await GoogleSignin.signIn();
     const googleCredential = auth.GoogleAuthProvider.credential(idToken);
     auth()
       .signInWithCredential(googleCredential)
       .then(async res => {
-        const { uid, displayName: name, email } = res.user;
+        const {uid, displayName: name, email} = res.user;
         await db()
           .ref(`users/${uid}`)
           .once('value')
@@ -57,43 +81,40 @@ class LogIn extends React.Component {
                   name,
                   email,
                   uid,
-                  learnedProblems: { randomId: 'problemId' },
+                  learnedProblems: {randomId: 'problemId'},
                 });
             }
           });
-        setUser({ uid, name, email });
+        setUser({uid, name, email});
         navigation.replace('HomePage');
-      })
+      });
     return auth().signInWithCredential(googleCredential);
   };
 
-
-
   changeWarningText = () => {
-    this.setState({ warningText: 'Invalid email or password.\nPlease try again.' })
+    this.setState({
+      warningText: 'Invalid email or password.\nPlease try again.',
+    });
   };
 
-
   logIn = async () => {
-    const { navigation, setUser } = this.props;
-    const { email, password } = this.state;
+    const {navigation, setUser} = this.props;
+    const {email, password} = this.state;
     if (email.trim() == '' || password.trim() == '') {
-      this.changeWarningText()
-      return
+      this.changeWarningText();
+      return;
     }
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async res => {
-        this.setState({ warningText: '' })
+        this.setState({warningText: ''});
         setUser(res.user);
         navigation.replace('HomePage');
       })
-      .catch(({ message }) => {
+      .catch(({message}) => {
         this.changeWarningText();
-        this.setState({ password: '' })
-      })
-
-
+        this.setState({password: ''});
+      });
   };
   onPressForgot = () => {
     this.props.navigation.navigate('Forgot');
@@ -103,14 +124,13 @@ class LogIn extends React.Component {
   };
 
   render() {
-    const { email, password, modalText, visible, warningText } = this.state;
-    const { user, setUser } = this.props;
+    const {email, password, modalText, visible, warningText} = this.state;
+    const {user, setUser} = this.props;
     return (
       <View style={styles.container}>
         <Modal
           isVisible={visible}
-          onBackdropPress={() => this.setState({ visible: false })}
-        >
+          onBackdropPress={() => this.setState({visible: false})}>
           <View style={styles.modalView}>
             <View style={styles.modalTextView}>
               <Text>{modalText}</Text>
@@ -121,14 +141,14 @@ class LogIn extends React.Component {
         <TextInput
           keyboardType="email-address"
           placeholder="Email"
-          onChangeText={email => this.setState({ email })}
+          onChangeText={email => this.setState({email})}
           value={email}
         />
 
         <TextInput
           secureTextEntry
           placeholder="Password"
-          onChangeText={password => this.setState({ password })}
+          onChangeText={password => this.setState({password})}
           value={password}
         />
 
@@ -140,16 +160,19 @@ class LogIn extends React.Component {
 
         <Button title="Sign in" onPress={() => this.logIn(email, password)} />
         <TouchableOpacity
-          style={(styles.forgotTextView, { alignItems: 'center' })}
+          style={(styles.forgotTextView, {alignItems: 'center'})}
           onPress={() => this.onSignUp()}>
           <Text style={styles.createText}>Create Account</Text>
         </TouchableOpacity>
-        <View style={{ width: 140 * width, height: 28 * height, marginTop: 10 * height }}>
-          {warningText == '' ? null :
-            <Text style={styles.warningText}>
-              {warningText}
-            </Text>
-          }
+        <View
+          style={{
+            width: 140 * width,
+            height: 28 * height,
+            marginTop: 10 * height,
+          }}>
+          {warningText == '' ? null : (
+            <Text style={styles.warningText}>{warningText}</Text>
+          )}
         </View>
         <View style={styles.googleSigninView}>
           <Text style={styles.signInGoogleText}>or sign in with</Text>
@@ -253,18 +276,19 @@ const styles = StyleSheet.create({
     fontFamily: 'roboto',
     fontSize: 12 * width,
     color: '#D43232',
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
 
 const mapStateToProps = state => {
-  const { user } = state;
-  return { user };
+  const {user} = state;
+  return {user};
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     setUser: user => dispatch(setUserAction(user)),
+    setConsent: consent => dispatch(setConsentAction(consent)),
   };
 };
 // Exports
