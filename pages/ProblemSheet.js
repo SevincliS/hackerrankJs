@@ -265,11 +265,12 @@ class ProblemSheet extends React.Component {
                 />
               </View>
               <Picker
+
                 mode="dropdown"
                 selectedValue={selectedTheme}
                 style={{
-                  height: 40,
-                  width: 180,
+                  height: 40*height,
+                  width: 120*width,
                   alignSelf: 'flex-end',
                   marginRight: 22 * width,
                 }}
