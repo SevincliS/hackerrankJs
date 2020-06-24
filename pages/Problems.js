@@ -13,6 +13,11 @@ import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 import {setCurrentProblem} from '../redux/actions/problemsActions';
 
+import {BannerAd, BannerAdSize, TestIds} from '@react-native-firebase/admob';
+
+const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-6543358689178377~8698272277';
+
+
 const width = parseInt(Dimensions.get('screen').width) / 360;
 const height = parseInt(Dimensions.get('screen').height) / 640;
 
@@ -31,7 +36,7 @@ class Problems extends React.Component {
 
   componentDidUpdate(prevProps) {
     const {learnedProblemIds} = this.props;
-    console.log('problems updated')
+    console.log('problems updated');
     if (learnedProblemIds.length != prevProps.learnedProblemIds.length) {
       this.loadProblems();
     }
@@ -92,6 +97,7 @@ class Problems extends React.Component {
           let activeStyle = learned ? learnedStyle : unLearnedStyle;
           difficulty = difficulty.toLowerCase();
           return (
+            <>
             <TouchableOpacity
               onPress={() => this.openProblemPage(problem)}
               key={index}
@@ -131,6 +137,14 @@ class Problems extends React.Component {
                 </View>
               </ShimmerPlaceHolder>
             </TouchableOpacity>
+            {(index+1)%5 == 0 ?
+              <View style={{width:321*width, height:51*height,marginTop:20*height, alignSelf:'center'}}>
+            <BannerAd
+              unitId={adUnitId}
+              size={BannerAdSize.BANNER}
+            />
+          </View> : null}
+          </>
           );
         })}
       </ScrollView>
