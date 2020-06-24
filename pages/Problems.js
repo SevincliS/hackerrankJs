@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Dimensions,
+  Dimensions,Image
 } from 'react-native';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
@@ -24,10 +24,26 @@ const height = parseInt(Dimensions.get('screen').height) / 640;
 class Problems extends React.Component {
   constructor(props) {
     super(props);
+    const {navigation} = props;
     this.state = {
       isLoaded: false,
       problems: [],
     };
+    backButton = require('../images/Back.png');
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+              navigation.goBack();
+            
+          }}>
+          <Image
+            style={{marginLeft:28*width,width: width * 19, height: height * 16.8}}
+            source={backButton}
+          />
+        </TouchableOpacity>
+      ),
+    });
   }
 
   componentDidMount() {
@@ -87,7 +103,6 @@ class Problems extends React.Component {
     setCurrentProblem(problem);
     this.props.navigation.navigate('ProblemSheet');
   };
-
   render() {
     const {problems, problemCount} = this.state;
     return (
@@ -138,10 +153,10 @@ class Problems extends React.Component {
               </ShimmerPlaceHolder>
             </TouchableOpacity>
             {(index+1)%5 == 0 ?
-              <View style={{width:321*width, height:51*height,marginTop:20*height, alignSelf:'center'}}>
+              <View style={{marginTop:13*height}}>
             <BannerAd
               unitId={adUnitId}
-              size={BannerAdSize.BANNER}
+              size={BannerAdSize.SMART_BANNER}
             />
           </View> : null}
           </>
@@ -160,7 +175,7 @@ const styles = StyleSheet.create({
   },
   shimmerProblems: {
     borderWidth: 0.2 * width,
-    marginTop: 20 * width,
+    marginTop: 13 * height,
     borderRadius: 7 * width,
     height: 65 * height,
     width: 313 * width,
@@ -190,7 +205,7 @@ const learnedStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    marginTop: 20 * height,
+    marginTop: 13 * height,
     backgroundColor: '#1BA94C',
     borderColor: '#000',
     borderWidth: 0.5 * width,
