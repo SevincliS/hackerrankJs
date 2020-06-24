@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Dimensions,Image
+  Dimensions,
+  Image,
 } from 'react-native';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
@@ -15,8 +16,9 @@ import {setCurrentProblem} from '../redux/actions/problemsActions';
 
 import {BannerAd, BannerAdSize, TestIds} from '@react-native-firebase/admob';
 
-const adUnitId = __DEV__ ? TestIds.BANNER : 'ca-app-pub-6543358689178377~8698272277';
-
+const adUnitId = __DEV__
+  ? TestIds.BANNER
+  : 'ca-app-pub-6543358689178377~8698272277';
 
 const width = parseInt(Dimensions.get('screen').width) / 360;
 const height = parseInt(Dimensions.get('screen').height) / 640;
@@ -34,11 +36,14 @@ class Problems extends React.Component {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-              navigation.goBack();
-            
+            navigation.goBack();
           }}>
           <Image
-            style={{marginLeft:28*width,width: width * 19, height: height * 16.8}}
+            style={{
+              marginLeft: 28 * width,
+              width: width * 19,
+              height: height * 16.8,
+            }}
             source={backButton}
           />
         </TouchableOpacity>
@@ -48,6 +53,8 @@ class Problems extends React.Component {
 
   componentDidMount() {
     this.loadProblems();
+    const {status} = this.props;
+    console.log(status)
   }
 
   componentDidUpdate(prevProps) {
@@ -105,6 +112,7 @@ class Problems extends React.Component {
   };
   render() {
     const {problems, problemCount} = this.state;
+    const {status} = this.props;
     return (
       <ScrollView horizontal={false}>
         {problems.map((problem, index) => {
@@ -113,53 +121,57 @@ class Problems extends React.Component {
           difficulty = difficulty.toLowerCase();
           return (
             <>
-            <TouchableOpacity
-              onPress={() => this.openProblemPage(problem)}
-              key={index}
-              style={styles.container}>
-              <ShimmerPlaceHolder
-                style={styles.shimmerProblems}
-                autoRun
-                visible={name != ''}>
-                <View style={activeStyle.card}>
-                  <View style={styles.texts}>
-                    <Text style={activeStyle.textName}>{name}</Text>
-                    <View style={styles.description}>
-                      <Text
-                        style={{
-                          ...activeStyle.textDiff,
-                          ...styles[
-                            difficulty == 'easy'
-                              ? 'easy'
-                              : difficulty == 'medium'
-                              ? 'medium'
-                              : 'hard'
-                          ],
-                        }}>
-                        {problem.difficulty}
-                      </Text>
-                      <Text style={activeStyle.textProbDiff}>
-                        {' '}
-                        , Problem Difficulty: {difficultyPoint}
+              <TouchableOpacity
+                onPress={() => this.openProblemPage(problem)}
+                key={index}
+                style={styles.container}>
+                <ShimmerPlaceHolder
+                  style={styles.shimmerProblems}
+                  autoRun
+                  visible={name != ''}>
+                  <View style={activeStyle.card}>
+                    <View style={styles.texts}>
+                      <Text style={activeStyle.textName}>{name}</Text>
+                      <View style={styles.description}>
+                        <Text
+                          style={{
+                            ...activeStyle.textDiff,
+                            ...styles[
+                              difficulty == 'easy'
+                                ? 'easy'
+                                : difficulty == 'medium'
+                                ? 'medium'
+                                : 'hard'
+                            ],
+                          }}>
+                          {problem.difficulty}
+                        </Text>
+                        <Text style={activeStyle.textProbDiff}>
+                          {' '}
+                          , Problem Difficulty: {difficultyPoint}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={activeStyle.learnCont}>
+                      <Text style={activeStyle.learnText}>
+                        {learned ? 'Learned' : 'Learn it !'}
                       </Text>
                     </View>
                   </View>
-                  <View style={activeStyle.learnCont}>
-                    <Text style={activeStyle.learnText}>
-                      {learned ? 'Learned' : 'Learn it !'}
-                    </Text>
-                  </View>
+                </ShimmerPlaceHolder>
+              </TouchableOpacity>
+              {(index + 1) % 5 == 0 ? (
+                <View style={{marginTop: 13 * height}}>
+                  <BannerAd
+                    unitId={adUnitId}
+                    size={BannerAdSize.SMART_BANNER}
+                    requestOptions={{
+                      requestNonPersonalizedAdsOnly: status,
+                    }}
+                  />
                 </View>
-              </ShimmerPlaceHolder>
-            </TouchableOpacity>
-            {(index+1)%5 == 0 ?
-              <View style={{marginTop:13*height}}>
-            <BannerAd
-              unitId={adUnitId}
-              size={BannerAdSize.SMART_BANNER}
-            />
-          </View> : null}
-          </>
+              ) : null}
+            </>
           );
         })}
       </ScrollView>
@@ -301,10 +313,12 @@ const unLearnedStyle = StyleSheet.create({
 
 mapStateToProps = state => {
   const {problems, currentProblemType, learnedProblemIds} = state.problems;
+  const {status} = state.consent;
   return {
     problems,
     currentProblemType,
     learnedProblemIds,
+    status,
   };
 };
 const mapDispatchToProps = dispatch => {

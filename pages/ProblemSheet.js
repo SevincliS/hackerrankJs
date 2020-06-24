@@ -42,9 +42,7 @@ const adUnitId = __DEV__
   : 'ca-app-pub-6543358689178377~8698272277';
 
 import {addToLearnedProblemIds} from '../redux/actions/problemsActions';
-
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
-  requestNonPersonalizedAdsOnly: true,
   keywords: ['hackerrank', 'code'],
 });
 
@@ -92,7 +90,8 @@ class ProblemSheet extends React.Component {
         </TouchableOpacity>
       ),
     });
-
+    const {status} = this.props;
+    rewarded.requestNonPersonalizedAdsOnly = status;
     this.eventListener = rewarded.onAdEvent((type, error, reward) => {
       if (type === RewardedAdEventType.LOADED) {
         this.setState({showRewarded: true});
@@ -105,6 +104,7 @@ class ProblemSheet extends React.Component {
     });
 
     rewarded.load();
+    console.log(rewarded);
   }
 
   componentDidMount() {
@@ -255,7 +255,15 @@ class ProblemSheet extends React.Component {
               </Text>
             </View>
             <View style={styles.pickerView}>
-              <View style={{flexDirection:'row'}}><Text style={styles.doubleTapText}>Double tap code for copy</Text><Image style={styles.downArrow}source={require('../images/Down.png')}></Image></View>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={styles.doubleTapText}>
+                  Double tap code for copy
+                </Text>
+                <Image
+                  style={styles.downArrow}
+                  source={require('../images/Down.png')}
+                />
+              </View>
               <Picker
                 mode="dropdown"
                 selectedValue={selectedTheme}
@@ -264,7 +272,6 @@ class ProblemSheet extends React.Component {
                   width: 180,
                   alignSelf: 'flex-end',
                   marginRight: 22 * width,
-                  
                 }}
                 onValueChange={selectedTheme => {
                   this.setState({selectedTheme});
@@ -459,12 +466,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  downArrow:{
-    width:width*8,
-    height:height*10,
-    alignSelf:'center',
-    marginLeft:3*width,
-    marginTop:3*height
+  downArrow: {
+    width: width * 8,
+    height: height * 10,
+    alignSelf: 'center',
+    marginLeft: 3 * width,
+    marginTop: 3 * height,
   },
   container: {
     flex: 1,
@@ -476,9 +483,11 @@ const styles = StyleSheet.create({
 mapStateToProps = state => {
   const {currentProblem} = state.problems;
   const {user} = state;
+  const {status} = state.consent;
   return {
     currentProblem,
     user,
+    status,
   };
 };
 const mapDispatchToProps = dispatch => {
