@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+<script src="https://www.gstatic.com/firebasejs/7.15.4/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/7.15.4/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.4/firebase-database.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyArlG44Qf8OYDY-xHtZndykYETOx5tEI6Y",
+    authDomain: "hackerrankjs.firebaseapp.com",
+    databaseURL: "https://hackerrankjs.firebaseio.com",
+    projectId: "hackerrankjs",
+    storageBucket: "hackerrankjs.appspot.com",
+    messagingSenderId: "417241406159",
+    appId: "1:417241406159:web:4546cc7f21651b94b6b5ba",
+    measurementId: "G-17FDVEWE1K"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  var database = firebase.database();
+
+  function createId(name) {
+    let words = name.split(' ');
+    let id='';
+    for(let i=0; i<words.length; i++) {
+      if(i==0) {
+        id+=words[i].toLowerCase()
+      }
+      else {
+        id+=words[i]
+      }
+    }
+    return id;
+  }
+  function onClick() {
+    const problemType = document.getElementById('problemType').value
+    const name = document.getElementById('name').value
+    const difficulty = document.getElementById('difficulty').value
+    const difficultyPoint = parseInt(document.getElementById('difficultyPoint').value,10)
+    const solution = document.getElementById('solution').value
+    const text = document.getElementById('text').value
+    const problemId = createId(name);   
+    console.log({problemId})  
+    database.ref('problems/'+problemType+'/'+problemId).set(
+      {
+      id:problemId,  
+      name,
+      difficulty,
+      difficultyPoint,
+      solution,
+      text
+    }
+    )
+   
+  }
+</script>
+</head>
+<body>
+    <label for="problemType">Enter Problem Type</label><br>
+    <select style="margin-top:10px;margin-bottom:10px" name="Problem Types" id="problemType">
+      <option value="practice">Practice</option>
+      <option value="interview">Interview</option>
+      <option value="certificate">Certificate</option>
+      <option value="machineLearning">Machine Learning</option>
+    </select><br>
+    <label  for="name">Problem Name</label><br>
+    <input style="margin-top:10px;margin-bottom:10px" id="name" placeholder="Problem Name"></input><br>
+    <label for="difficulty">Problem Difficulty</label><br>
+    <select style="margin-top:10px;margin-bottom:10px"  name="Problem Difficulty" id="difficulty">
+      <option value="Easy">Easy</option>
+      <option value="Medium">Medium</option>
+      <option value="Hard">Hard</option>
+    </select><br>
+    <label for="difficultyPoint">Problem Difficulty Point</label><br>
+    <input style="margin-top:10px;margin-bottom:10px" id="difficultyPoint" placeholder="Difficulty Point" type="number" min="1" max="100"></input><br>
+    <label for="text">Problem Text Url</label><br>
+    <input style="margin-top:10px;margin-bottom:10px" id="text" placeholder="Problem text url"></input><br>
+    <label for="solution">Problem Solution Url</label><br>
+    <input style="margin-top:10px;margin-bottom:10px" id="solution" placeholder="Problem Solution url"></input><br>
+    <button style="margin-top:10px;margin-bottom:10px" onClick="onClick()">Add Problem</button>
+</body>
+</html>
