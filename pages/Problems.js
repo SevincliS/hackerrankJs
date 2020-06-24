@@ -53,8 +53,6 @@ class Problems extends React.Component {
 
   componentDidMount() {
     this.loadProblems();
-    const {status} = this.props;
-    console.log(status)
   }
 
   componentDidUpdate(prevProps) {
@@ -110,6 +108,14 @@ class Problems extends React.Component {
     setCurrentProblem(problem);
     this.props.navigation.navigate('ProblemSheet');
   };
+
+  getEasyCss = learned => {
+    if (!learned) {
+      return 'unLearnedEasy';
+    } else {
+      return 'easy';
+    }
+  };
   render() {
     const {problems, problemCount} = this.state;
     const {status} = this.props;
@@ -138,7 +144,7 @@ class Problems extends React.Component {
                             ...activeStyle.textDiff,
                             ...styles[
                               difficulty == 'easy'
-                                ? 'easy'
+                                ? this.getEasyCss(learned)
                                 : difficulty == 'medium'
                                 ? 'medium'
                                 : 'hard'
@@ -203,6 +209,9 @@ const styles = StyleSheet.create({
 
   easy: {
     color: '#fff',
+  },
+  unLearnedEasy: {
+    color: '#1BA94C',
   },
   medium: {
     color: '#C24600',
