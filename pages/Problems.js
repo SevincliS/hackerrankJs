@@ -8,11 +8,13 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  Image,
+  Image,TouchableHighlight
 } from 'react-native';
+import Modal from 'react-native-modal';
+
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
-import {setCurrentProblem} from '../redux/actions/problemsActions';
+import {setCurrentProblem, removeFromLearnedProblemIds} from '../redux/actions/problemsActions';
 
 import {BannerAd, BannerAdSize, TestIds} from '@react-native-firebase/admob';
 
@@ -28,6 +30,7 @@ class Problems extends React.Component {
     super(props);
     const {navigation} = props;
     this.state = {
+      longPressedProblemId:'',
       isLoaded: false,
       problems: [],
     };
@@ -108,6 +111,19 @@ class Problems extends React.Component {
     setCurrentProblem(problem);
     this.props.navigation.navigate('ProblemSheet');
   };
+  markAsUnLearned = async () => {
+    const {
+      user,
+      removeFromLearnedProblemIds,
+    } = this.props;
+    const id = this.state.longPressedProblemId;
+    const {uid} = user;
+    let updates = {};
+    removeFromLearnedProblemIds(id);
+    await db()
+      .ref(`users/${uid}/learnedProblems/${id}`).remove()
+    this.setState({modalVisible:false})
+  };
 
   getEasyCss = learned => {
     if (!learned) {
@@ -117,20 +133,48 @@ class Problems extends React.Component {
     }
   };
   render() {
-    const {problems, problemCount} = this.state;
+    const {problems, problemCount,modalVisible} = this.state;
     const {status} = this.props;
     return (
       <ScrollView horizontal={false}>
         {problems.map((problem, index) => {
-          let {difficulty, difficultyPoint, name, learned} = problem;
+          let {difficulty, difficultyPoint, name, learned,id} = problem;
           let activeStyle = learned ? learnedStyle : unLearnedStyle;
           difficulty = difficulty.toLowerCase();
           return (
             <>
               <TouchableOpacity
+                onLongPress={() => learned ? this.setState({modalVisible: true,longPressedProblemId:id}): null}
                 onPress={() => this.openProblemPage(problem)}
                 key={index}
                 style={styles.container}>
+                  <Modal
+                isVisible={modalVisible}
+                onBackdropPress={() => this.setState({modalVisible: false})}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    <Text style={styles.modalText}>
+                      Do you want to mark this problem as "UnLearned" ?
+                    </Text>
+                    <View style={styles.buttons}>
+                      <TouchableHighlight
+                        underlayColor="#1BA94C"
+                        style={styles.yesButton}
+                        onPress={() => {
+                          this.markAsUnLearned();
+                        }}>
+                        <Text style={styles.yesText}>YES</Text>
+                      </TouchableHighlight>
+                      <TouchableHighlight
+                        underlayColor="#D50D20"
+                        style={styles.noButton}
+                        onPress={() => this.setState({modalVisible: false})}>
+                        <Text style={styles.noText}>NO</Text>
+                      </TouchableHighlight>
+                    </View>
+                  </View>
+                </View>
+              </Modal>
                 <ShimmerPlaceHolder
                   style={styles.shimmerProblems}
                   autoRun
@@ -166,7 +210,7 @@ class Problems extends React.Component {
                   </View>
                 </ShimmerPlaceHolder>
               </TouchableOpacity>
-              {(index + 1) % 5 == 0 ? (
+              {(index + 1)%5 == 0 ? (
                 <View style={{marginTop: 10 * height,marginBottom:3*height}}>
                   <BannerAd
                     unitId={adUnitId}
@@ -219,6 +263,71 @@ const styles = StyleSheet.create({
   },
   hard: {
     color: '#FF0404',
+  },
+  
+  modalView: {
+    justifyContent: 'center',
+    width: 290 * width,
+    height: 156 * height,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  yesText: {
+    alignSelf: 'center',
+    fontFamily: 'roboto',
+    fontSize: 15,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  noText: {
+    alignSelf: 'center',
+    fontFamily: 'roboto',
+    fontSize: 15,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginHorizontal: 20,
+    marginBottom: 30,
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  yesButton: {
+    justifyContent: 'center',
+    width: 95 * width,
+    height: 30 * height,
+    marginRight: 18 * width,
+    backgroundColor: '#10D554',
+    borderRadius: 4,
+    textAlign: 'center',
+    elevation: 2,
+  },
+  noButton: {
+    justifyContent: 'center',
+    width: 95 * width,
+    height: 30 * height,
+    backgroundColor: '#DC3545',
+    borderRadius: 4,
+    textAlign: 'center',
+    elevation: 2,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
@@ -321,21 +430,25 @@ const unLearnedStyle = StyleSheet.create({
     fontFamily: 'roboto',
     color: '#1BA94C',
   },
+  
 });
 
 mapStateToProps = state => {
   const {problems, currentProblemType, learnedProblemIds} = state.problems;
+  const {user} = state
   const {status} = state.consent;
   return {
     problems,
     currentProblemType,
     learnedProblemIds,
     status,
+    user
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
     setCurrentProblem: problem => dispatch(setCurrentProblem(problem)),
+    removeFromLearnedProblemIds: problemId => dispatch(removeFromLearnedProblemIds(problemId)) 
   };
 };
 

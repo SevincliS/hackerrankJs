@@ -18,6 +18,8 @@ const problemsReducer = (state = INITIAL_STATE, action) => {
       return { ...state, currentProblemType: action.problemType }
     case 'ADD_TO_LEARNED_PROBLEM_IDS':
       return { ...state, learnedProblemIds: [...state.learnedProblemIds, action.problemId] }
+    case 'REMOVE_FROM_LEARNED_PROBLEM_IDS':
+      return { ...state, learnedProblemIds: state.learnedProblemIds.filter(id=>id!=action.problemId) }
     default:
       return state
   }

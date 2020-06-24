@@ -265,12 +265,11 @@ class ProblemSheet extends React.Component {
                 />
               </View>
               <Picker
-
                 mode="dropdown"
                 selectedValue={selectedTheme}
                 style={{
-                  height: 40*height,
-                  width: 120*width,
+                  height: 30*height,
+                  width: 140*width,
                   alignSelf: 'flex-end',
                   marginRight: 22 * width,
                 }}
@@ -279,6 +278,7 @@ class ProblemSheet extends React.Component {
                 }}>
                 {this.themes.map(theme => (
                   <Picker.Item
+                    
                     key={theme['label']}
                     label={theme['label']}
                     value={theme['value']}
