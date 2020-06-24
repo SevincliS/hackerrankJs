@@ -25,55 +25,50 @@ class Forgot extends Component {
     this.state = {
       email: '',
       visible: false,
-      modalText: 'initial'
+      modalText: 'initial',
+      warningText: '',
+      warningColor: '#1BA94C',
     };
   }
 
+  changeWarningText = (warningText, warningColor) => {
+    this.setState({ warningText, warningColor })
+  };
 
-  openAndCloseModal = (seconds, modalText) => {
-    return new Promise((resolve, reject) => {
-      this.setState({ visible: true, modalText }, () => {
-        setTimeout(() => {
-          this.setState({ visible: false }, () => resolve('modalClosed'))
-        }, seconds * 1000)
-      })
-    })
-  }
+
   sendForgotRequest = (email) => {
-    const { navigation } = this.props;
     if (email.trim() == '') {
-      this.openAndCloseModal(2, 'Please enter your email')
+      this.changeWarningText('Please enter your email', '#D43232')
       return
     }
     auth().sendPasswordResetEmail(email).then(async () => {
-      console.log("wtf yaaa");
-      await this.openAndCloseModal(2, "E-mail is sent.Please don't forget to check your spam folder.")
-      navigation.goBack()
+      this.changeWarningText("E-mail is sent.\nPlease don\'t forget to check your spam folder.", '#1BA94C');
     }).catch(({ message }) => {
-      this.openAndCloseModal(3, message.split("]")[1]);
+      this.changeWarningText(message.split("]")[1], '#D43232')
     });
   }
 
   render() {
-    const { email, visible, modalText } = this.state;
+    const { email, warningText, warningColor } = this.state;
     return (
       <>
         <View style={styles.container}>
-          <Modal
-            isVisible={visible}
-            onBackdropPress= {() => this.setState({visible:false})}>
-            <View style={styles.modalView}>
-              <View style={styles.modalTextView}>
-                <Text>{modalText}</Text>
-              </View>
-            </View>
-          </Modal>
           <TextInput
             keyboardType="email-address"
             placeholder="Your Email"
             onChangeText={email => this.setState({ email })}
             value={email}
           />
+          <View
+            style={{ width: 278 * width, height: 28 * height, alignContent: 'flex-start', marginTop: -3 * height }}>
+            {warningText == '' ?
+              null
+              :
+              <Text
+                style={{ ...styles.warningText, ...{ color: warningColor } }}
+              >{warningText}</Text>
+            }
+          </View>
           <Button
             extraStyle={{ marginTop: 15 * height }}
             title="Send a Reset Link"
@@ -92,27 +87,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  modalView: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 78 * width,
-  },
-  modalTextView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: 204 * width,
-    height: 50 * height,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+  warningText: {
+    fontFamily: 'roboto',
+    fontSize: 12 * width,
   }
-});
+})
 
 export default Forgot;

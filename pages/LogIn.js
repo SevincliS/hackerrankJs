@@ -27,19 +27,14 @@ class LogIn extends React.Component {
     this.state = {
       email: '',
       password: '',
-      visible:false,
-      modalText:'',
+      visible: false,
+      modalText: '',
+      warningText: '',
     };
   }
 
 
-  openAndCloseModal = (seconds, modalText) => {
-      this.setState({ visible: true, modalText }, () => {
-        setTimeout(() => {
-          this.setState({ visible: false })
-        }, seconds * 1000)
-      })
-  }
+ 
 
 
   onGoogleButtonPress = async () => {
@@ -74,28 +69,28 @@ class LogIn extends React.Component {
 
 
 
-
+  changeWarningText = () => {
+    this.setState({ warningText: 'Invalid email or password.\nPlease try again.' })
+  };
 
 
   logIn = async () => {
     const { navigation, setUser } = this.props;
     const { email, password } = this.state;
-    if (email.trim() == '') {
-      this.openAndCloseModal(2, 'Please enter your email.')
-      return
-    }
-    else if (password.trim() == '') {
-      this.openAndCloseModal(2, 'Please enter your password.')
+    if (email.trim() == '' || password.trim() == '') {
+      this.changeWarningText()
       return
     }
     auth()
       .signInWithEmailAndPassword(email, password)
       .then(async res => {
+        this.setState({ warningText: '' })
         setUser(res.user);
         navigation.replace('HomePage');
       })
       .catch(({ message }) => {
-        this.openAndCloseModal(2, message.split(']')[1]);
+        this.changeWarningText();
+        this.setState({ password: '' })
       })
 
 
@@ -108,14 +103,14 @@ class LogIn extends React.Component {
   };
 
   render() {
-    const { email, password, modalText, visible } = this.state;
+    const { email, password, modalText, visible, warningText } = this.state;
     const { user, setUser } = this.props;
     return (
       <View style={styles.container}>
         <Modal
           isVisible={visible}
-          onBackdropPress={() => this.setState({visible:false})}
-          >
+          onBackdropPress={() => this.setState({ visible: false })}
+        >
           <View style={styles.modalView}>
             <View style={styles.modalTextView}>
               <Text>{modalText}</Text>
@@ -144,13 +139,18 @@ class LogIn extends React.Component {
         </TouchableOpacity>
 
         <Button title="Sign in" onPress={() => this.logIn(email, password)} />
-        <Text>warningText</Text>
         <TouchableOpacity
           style={(styles.forgotTextView, { alignItems: 'center' })}
           onPress={() => this.onSignUp()}>
           <Text style={styles.createText}>Create Account</Text>
         </TouchableOpacity>
-
+        <View style={{ width: 140 * width, height: 28 * height, marginTop: 10 * height }}>
+          {warningText == '' ? null :
+            <Text style={styles.warningText}>
+              {warningText}
+            </Text>
+          }
+        </View>
         <View style={styles.googleSigninView}>
           <Text style={styles.signInGoogleText}>or sign in with</Text>
           <TouchableOpacity
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   googleSigninView: {
-    marginTop: 52 * height,
+    marginTop: 15 * height,
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
@@ -247,6 +247,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  warningText: {
+    alignSelf: 'center',
+    fontFamily: 'roboto',
+    fontSize: 12 * width,
+    color: '#D43232',
+    textAlign: 'center'
   }
 });
 

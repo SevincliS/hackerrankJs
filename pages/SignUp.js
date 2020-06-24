@@ -29,36 +29,35 @@ class SignUp extends Component {
       email: '',
       name: '',
       password: '',
-      visible: false
+      visible: false,
+      warningText: ''
     };
   }
 
-  openAndCloseModal = (seconds, modalText) => {
-    this.setState({ visible: true, modalText }, () => {
-      setTimeout(() => {
-        this.setState({ visible: false })
-      }, seconds * 1000)
-    })
-  }
 
+
+  changeWarningText = (warningText) => {
+    this.setState({ warningText })
+  }
 
   register = (email, password, name) => {
     const { navigation, setUser } = this.props;
     if (name.trim() == '') {
-      this.openAndCloseModal(2, 'Please enter your name.')
+      this.changeWarningText('Please enter your name.');
       return
     }
     else if (email.trim() == '') {
-      this.openAndCloseModal(2, 'Please enter your email.')
+      this.changeWarningText('Please enter your email.');
       return
     }
     else if (password.trim() == '') {
-      this.openAndCloseModal(2, 'Please enter your password.')
+      this.changeWarningText('Please enter your password.');
       return
     }
     auth()
       .createUserWithEmailAndPassword(email, password, name)
       .then(async res => {
+        this.changeWarningText('')
         const { user } = res;
         const { uid, email } = user;
         db().ref(`users/${uid}`)
@@ -66,19 +65,18 @@ class SignUp extends Component {
         setUser({ name, email, uid });
         navigation.replace('HomePage');
       })
-      .catch(({ message }) => {
-        const text = message.split(']')[1]
-        this.openAndCloseModal(2, text)
+      .catch(() => {
+        this.changeWarningText('Invalid email or password.Please try again.\nPassword should be at least 6 characters');
       });
   };
   render() {
-    const { name, email, password, visible, modalText } = this.state;
+    const { name, email, password, visible, modalText, warningText } = this.state;
     return (
       <>
         <View style={styles.container}>
           <Modal
             isVisible={visible}
-            onBackButtonPress={() => this.setState({visible:false})}>
+            onBackButtonPress={() => this.setState({ visible: false })}>
             <View style={styles.modalView}>
               <View style={styles.modalTextView}>
                 <Text>{modalText}</Text>
@@ -103,7 +101,14 @@ class SignUp extends Component {
             onChangeText={password => this.setState({ password })}
             value={password}
           />
+          <View style={{ width: 278 * width, height: 28 * height, alignContent: 'flex-start', marginTop: -3 * height }}>
+            {warningText == '' ? null :
+              <Text style={styles.warningText}>
+                {warningText}
+              </Text>}
+          </View>
           <Button
+            extraStyle={{ marginTop: 15 * height }}
             title="Create an Acount"
             onPress={() => this.register(email, password, name)}
           />
@@ -139,6 +144,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  warningText: {
+    alignSelf: 'center',
+    fontFamily: 'roboto',
+    fontSize: 12 * width,
+    color: '#D43232',
+    textAlign: 'center'
   }
 });
 
