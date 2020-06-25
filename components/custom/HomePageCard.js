@@ -1,19 +1,12 @@
+/* eslint-disable react/no-did-update-set-state */
+/* eslint-disable react/no-did-mount-set-state */
 import React, {Component} from 'react';
 import {Bar} from 'react-native-progress';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
-import {
-  View,
-  TouchableOpacity,
-  FlatList,
-  ScrollView,
-  Text,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
-import {RawButton} from 'react-native-gesture-handler';
+import {View, Text, StyleSheet, Dimensions} from 'react-native';
 
-const width = parseInt(Dimensions.get('screen').width) / 360;
-const height = parseInt(Dimensions.get('screen').height) / 640;
+const width = parseInt(Dimensions.get('screen').width, 10) / 360;
+const height = parseInt(Dimensions.get('screen').height, 10) / 640;
 
 class HomePageCard extends Component {
   constructor(props) {
@@ -26,12 +19,12 @@ class HomePageCard extends Component {
     };
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     const {progress, progressText, progressPercentageText} = this.props.item;
     if (
-      progress != this.state.progress ||
-      progressText != this.state.progressText ||
-      progressPercentageText != this.state.progressPercentageText
+      progress !== this.state.progress ||
+      progressText !== this.state.progressText ||
+      progressPercentageText !== this.state.progressPercentageText
     ) {
       this.setState({
         progress,
@@ -44,31 +37,37 @@ class HomePageCard extends Component {
     let title, color;
     switch (this.props.item.type) {
       case 'practice':
-        (title = 'Practice Your Problem Solving Skills'), (color = '#204051');
+        title = 'Practice Your Problem Solving Skills';
+        color = '#204051';
         break;
       case 'interview':
-        (title = 'Interview Preparation Kit'), (color = '#3B6978');
+        title = 'Interview Preparation Kit';
+        color = '#3B6978';
         break;
       case 'getMoreCertificates':
-        (title = 'Get More Certificates'), (color = '#84A9AC');
+        title = 'Get More Certificates';
+        color = '#84A9AC';
         break;
       case 'javascript':
-        (title = 'JavaScript'), (color = '#CAE8D5');
+        title = 'JavaScript';
+        color = '#CAE8D5';
         break;
       case 'machineLearning':
-        (title = 'Machine Learning'), (color = '#204051');
+        title = 'Machine Learning';
+        color = '#204051';
         break;
       case 'certificate':
-        (title = 'Certificate'), (color = '#3B6978');
+        title = 'Certificate';
+        color = '#3B6978';
         break;
       default:
-        (title = 'Unknown Type'), (color = '#3B6978');
+        title = 'Unknown Type';
+        color = '#3B6978';
     }
     this.setState({title, color});
   }
 
   render() {
-    const {item} = this.props;
     const {
       progress,
       progressText,
@@ -76,11 +75,12 @@ class HomePageCard extends Component {
       color,
       progressPercentageText,
     } = this.state;
-    return (<ShimmerPlaceHolder
-      style={styles.cardView}
-      autoRun
-      visible={progressText != '' && progress != null}>
-      <View style={{...styles.cardView, ...{backgroundColor: color}}}>
+    return (
+      <ShimmerPlaceHolder
+        style={styles.cardView}
+        autoRun
+        visible={progressText !== '' && progress !== null}>
+        <View style={{...styles.cardView, ...{backgroundColor: color}}}>
           <View style={styles.titleView}>
             <Text style={styles.titleText}>{title}</Text>
           </View>
@@ -99,7 +99,7 @@ class HomePageCard extends Component {
           <View style={styles.progressView}>
             <Text style={styles.progressText}>{progressText}</Text>
           </View>
-      </View>
+        </View>
       </ShimmerPlaceHolder>
     );
   }
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     marginTop: 20 * height,
     marginHorizontal: 23 * width,
   },
-  titleShimmer:{
+  titleShimmer: {
     height: 23 * height,
     width: 230 * width,
     marginTop: 21 * height,
@@ -137,9 +137,9 @@ const styles = StyleSheet.create({
     fontFamily: 'roboto',
     color: '#FFFFFF',
   },
-  barShimmer:{
-    height:14*width,
-    width:(width-19)*width,
+  barShimmer: {
+    height: 14 * width,
+    width: (width - 19) * width,
     marginHorizontal: 12 * width,
     marginBottom: 7 * height,
   },
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     width: 256 * width,
     alignSelf: 'center',
   },
-  progressViewShimmer:{
+  progressViewShimmer: {
     height: 14 * height,
     width: 230 * width,
     marginLeft: 12 * width,

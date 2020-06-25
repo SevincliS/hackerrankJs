@@ -1,18 +1,13 @@
 import React from 'react';
-import {StyleSheet} from 'react-native';
-import SplashScreen from 'react-native-splash-screen'
-
-import {Colors} from 'react-native/Libraries/NewAppScreen';
-
+import SplashScreen from 'react-native-splash-screen';
 import {NavigationContainer} from '@react-navigation/native';
-
 import {PersistGate} from 'redux-persist/integration/react';
 import {Provider} from 'react-redux';
+import {GoogleSignin} from '@react-native-community/google-signin';
+import admob, {MaxAdContentRating} from '@react-native-firebase/admob';
 
 import {store, persistor} from './redux/store/store';
-import {GoogleSignin} from '@react-native-community/google-signin';
 import Router from './Router.js';
-import admob, {MaxAdContentRating} from '@react-native-firebase/admob';
 
 GoogleSignin.configure({
   webClientId:
@@ -39,7 +34,7 @@ class App extends React.PureComponent {
   }
 
   componentDidMount() {
-    SplashScreen.hide() 
+    SplashScreen.hide();
   }
 
   render() {
@@ -56,44 +51,5 @@ class App extends React.PureComponent {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  scrollView: {
-    backgroundColor: Colors.lighter,
-  },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
-});
 
 export default App;

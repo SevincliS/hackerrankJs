@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 
 import problemsReducer from './problemsReducer';
 import userReducer from './userReducer';

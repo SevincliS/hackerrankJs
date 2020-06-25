@@ -1,7 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react/no-did-mount-set-state */
 import React from 'react';
 import db from '@react-native-firebase/database';
 import SyntaxHighlighter from 'react-native-syntax-highlighter';
-import HeaderBackButton from '../node_modules/@react-navigation/stack/lib/commonjs/views/Header/HeaderBackButton';
 import {
   atomDark,
   tomorrow,
@@ -10,7 +11,6 @@ import {
   vs,
   twilight,
   dark,
-  funky,
   okaidia,
   duotoneForest,
   prism,
@@ -41,7 +41,7 @@ const adUnitId = __DEV__
   ? TestIds.REWARDED
   : 'ca-app-pub-6543358689178377~8698272277';
 
-import {addToLearnedProblemIds} from '../redux/actions/problemsActions';
+import {addToLearnedProblemIds as addToLearnedProblemIdsAction} from '../redux/actions/problemsActions';
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
   keywords: ['hackerrank', 'code'],
 });
@@ -68,7 +68,7 @@ class ProblemSheet extends React.Component {
       clipboardModalVisible: false,
       learned: currentProblem.learned,
     };
-    backButton = require('../images/Back.png');
+    let backButton = require('../images/Back.png');
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
@@ -105,7 +105,9 @@ class ProblemSheet extends React.Component {
         });
         this.writeToClipboard(solutionText);
       }
-      if (!rewarded.loaded) rewarded.load();
+      if (!rewarded.loaded) {
+        rewarded.load();
+      }
     });
 
     rewarded.load();
@@ -114,7 +116,7 @@ class ProblemSheet extends React.Component {
 
   componentDidMount() {
     const {currentProblem} = this.props;
-    const {id, name, text, solution} = currentProblem;
+    const {text, solution} = currentProblem;
     this.setState({spinner: true});
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
@@ -130,10 +132,6 @@ class ProblemSheet extends React.Component {
         spinner: false,
       });
     });
-  }
-
-  componentDidUpdate() {
-    console.log('problemsheet updated');
   }
 
   themes = [
@@ -198,7 +196,7 @@ class ProblemSheet extends React.Component {
   };
 
   render() {
-    const {spinner, visible, source} = this.state;
+    const {spinner} = this.state;
     const {
       problemText,
       functionDescription,
@@ -264,22 +262,16 @@ class ProblemSheet extends React.Component {
               <Picker
                 mode="dropdown"
                 selectedValue={selectedTheme}
-                style={{
-                  height: 30*height,
-                  width: 140*width,
-                  alignSelf: 'flex-end',
-                  marginRight: 22 * width,
-                }}
-                onValueChange={selectedTheme => {
-                  this.setState({selectedTheme});
+                style={styles.picker}
+                onValueChange={value => {
+                  this.setState({selectedTheme: value});
                 }}>
                 {this.themes.map(theme => (
                   <Picker.Item
-                    
-                    key={theme['label']}
-                    label={theme['label']}
-                    value={theme['value']}
-                    color={theme['color']}
+                    key={theme.label}
+                    label={theme.label}
+                    value={theme.value}
+                    color={theme.color}
                   />
                 ))}
               </Picker>
@@ -392,6 +384,12 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  picker: {
+    height: 30 * height,
+    width: 140 * width,
+    alignSelf: 'flex-end',
+    marginRight: 22 * width,
+  },
   modalView: {
     justifyContent: 'center',
     width: 290 * width,
@@ -478,7 +476,7 @@ const styles = StyleSheet.create({
   },
 });
 
-mapStateToProps = state => {
+const mapStateToProps = state => {
   const {currentProblem} = state.problems;
   const {user} = state;
   const {status} = state.consent;
@@ -491,7 +489,7 @@ mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     addToLearnedProblemIds: problemId =>
-      dispatch(addToLearnedProblemIds(problemId)),
+      dispatch(addToLearnedProblemIdsAction(problemId)),
   };
 };
 

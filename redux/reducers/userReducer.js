@@ -1,17 +1,16 @@
 const INITIAL_STATE = {
-  name: "",
+  name: '',
 };
 
 const userReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case "SET_USER":
+    case 'SET_USER':
       return action.user;
-    case "RESET_USER":
-      return INITIAL_STATE;  
+    case 'RESET_USER':
+      return INITIAL_STATE;
     default:
-      return state
+      return state;
   }
 };
-
 
 export default userReducer;

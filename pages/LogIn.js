@@ -19,8 +19,8 @@ import {setConsent as setConsentAction} from '../redux/actions/consentAction';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import {AdsConsent, AdsConsentStatus} from '@react-native-firebase/admob';
 
-const width = parseInt(Dimensions.get('screen').width) / 360;
-const height = parseInt(Dimensions.get('screen').height) / 640;
+const width = parseInt(Dimensions.get('screen').width, 10) / 360;
+const height = parseInt(Dimensions.get('screen').height, 10) / 640;
 
 class LogIn extends React.Component {
   constructor(props) {
@@ -42,20 +42,20 @@ class LogIn extends React.Component {
     const {setConsent} = this.props;
     if (consentInfo.isRequestLocationInEeaOrUnknown) {
       const status = await AdsConsent.getStatus();
-      if (status == AdsConsentStatus.UNKNOWN) {
+      if (status === AdsConsentStatus.UNKNOWN) {
         const formResult = await AdsConsent.showForm({
           privacyPolicy: 'https://invertase.io/privacy-policy',
           withPersonalizedAds: true,
           withNonPersonalizedAds: true,
         });
-        if (formResult.status == AdsConsentStatus.PERSONALIZED) {
+        if (formResult.status === AdsConsentStatus.PERSONALIZED) {
           setConsent({status: false});
-        } else if (formResult.status == AdsConsentStatus.NON_PERSONALIZED) {
+        } else if (formResult.status === AdsConsentStatus.NON_PERSONALIZED) {
           setConsent({status: true});
         }
-      } else if (status == AdsConsentStatus.PERSONALIZED) {
+      } else if (status === AdsConsentStatus.PERSONALIZED) {
         setConsent({status: false});
-      } else if (status == AdsConsentStatus.NON_PERSONALIZED) {
+      } else if (status === AdsConsentStatus.NON_PERSONALIZED) {
         setConsent({status: true});
       }
     }
@@ -100,7 +100,7 @@ class LogIn extends React.Component {
   logIn = async () => {
     const {navigation, setUser} = this.props;
     const {email, password} = this.state;
-    if (email.trim() == '' || password.trim() == '') {
+    if (email.trim() === '' || password.trim() === '') {
       this.changeWarningText();
       return;
     }
@@ -125,7 +125,6 @@ class LogIn extends React.Component {
 
   render() {
     const {email, password, modalText, visible, warningText} = this.state;
-    const {user, setUser} = this.props;
     return (
       <View style={styles.container}>
         <Modal
@@ -141,14 +140,14 @@ class LogIn extends React.Component {
         <TextInput
           keyboardType="email-address"
           placeholder="Email"
-          onChangeText={email => this.setState({email})}
+          onChangeText={value => this.setState({email: value})}
           value={email}
         />
 
         <TextInput
           secureTextEntry
           placeholder="Password"
-          onChangeText={password => this.setState({password})}
+          onChangeText={value => this.setState({password: value})}
           value={password}
         />
 
@@ -170,7 +169,7 @@ class LogIn extends React.Component {
             height: 28 * height,
             marginTop: 10 * height,
           }}>
-          {warningText == '' ? null : (
+          {warningText === '' ? null : (
             <Text style={styles.warningText}>{warningText}</Text>
           )}
         </View>

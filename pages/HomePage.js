@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import SplashScreen from 'react-native-splash-screen';
-import auth from '@react-native-firebase/auth';
 import db from '@react-native-firebase/database';
 import {connect} from 'react-redux';
 import {View, TouchableOpacity, FlatList, Dimensions} from 'react-native';
@@ -75,11 +73,11 @@ class HomePage extends Component {
     const {setConsent} = this.props;
     if (consentInfo.isRequestLocationInEeaOrUnknown) {
       const status = await AdsConsent.getStatus();
-      if (status == AdsConsentStatus.UNKNOWN) {
+      if (status === AdsConsentStatus.UNKNOWN) {
         setConsent({status: false});
-      } else if (status == AdsConsentStatus.PERSONALIZED) {
+      } else if (status === AdsConsentStatus.PERSONALIZED) {
         setConsent({status: false});
-      } else if (status == AdsConsentStatus.NON_PERSONALIZED) {
+      } else if (status === AdsConsentStatus.NON_PERSONALIZED) {
         setConsent({status: true});
       }
     }
@@ -100,8 +98,8 @@ class HomePage extends Component {
     db()
       .ref(`users/${user.uid}/learnedProblems`)
       .once('value')
-      .then(problems => {
-        let learnedProblems = Object.keys(problems.val());
+      .then(_problems => {
+        let learnedProblems = Object.keys(_problems.val());
         problemTypes.forEach((problemType, i) => {
           db()
             .ref(`problems/${problemType}`)

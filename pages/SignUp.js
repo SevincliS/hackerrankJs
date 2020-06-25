@@ -1,25 +1,16 @@
-import React, { Component, useState } from 'react';
+import React, {Component} from 'react';
 import auth from '@react-native-firebase/auth';
 import db from '@react-native-firebase/database';
-import { connect } from 'react-redux';
-import {
-  SafeAreaView,
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  StatusBar,
-  Dimensions,
-} from 'react-native';
-import Modal from 'react-native-modal'
-
+import {connect} from 'react-redux';
+import {StyleSheet, View, Text, Dimensions} from 'react-native';
+import Modal from 'react-native-modal';
 
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
-import { setUser as setUserAction } from '../redux/actions/userActions';
+import {setUser as setUserAction} from '../redux/actions/userActions';
 
-const width = parseInt(Dimensions.get('screen').width) / 360
-const height = parseInt(Dimensions.get('screen').height) / 640
+const width = parseInt(Dimensions.get('screen').width, 10) / 360;
+const height = parseInt(Dimensions.get('screen').height, 10) / 640;
 
 class SignUp extends Component {
   constructor(props) {
@@ -30,53 +21,52 @@ class SignUp extends Component {
       name: '',
       password: '',
       visible: false,
-      warningText: ''
+      warningText: '',
     };
   }
 
-
-
-  changeWarningText = (warningText) => {
-    this.setState({ warningText })
-  }
+  changeWarningText = warningText => {
+    this.setState({warningText});
+  };
 
   register = (email, password, name) => {
-    const { navigation, setUser } = this.props;
-    if (name.trim() == '') {
+    const {navigation, setUser} = this.props;
+    if (name.trim() === '') {
       this.changeWarningText('Please enter your name.');
-      return
-    }
-    else if (email.trim() == '') {
+      return;
+    } else if (email.trim() === '') {
       this.changeWarningText('Please enter your email.');
-      return
-    }
-    else if (password.trim() == '') {
+      return;
+    } else if (password.trim() === '') {
       this.changeWarningText('Please enter your password.');
-      return
+      return;
     }
     auth()
       .createUserWithEmailAndPassword(email, password, name)
       .then(async res => {
-        this.changeWarningText('')
-        const { user } = res;
-        const { uid, email } = user;
-        db().ref(`users/${uid}`)
-          .set({ name, email, uid, learnedProblems: { randomId: 'problemId' } });
-        setUser({ name, email, uid });
+        this.changeWarningText('');
+        const {user} = res;
+        const {uid} = user;
+        db()
+          .ref(`users/${uid}`)
+          .set({name, email, uid, learnedProblems: {randomId: 'problemId'}});
+        setUser({name, email, uid});
         navigation.replace('HomePage');
       })
       .catch(() => {
-        this.changeWarningText('Invalid email or password.Please try again.\nPassword should be at least 6 characters');
+        this.changeWarningText(
+          'Invalid email or password.Please try again.\nPassword should be at least 6 characters',
+        );
       });
   };
   render() {
-    const { name, email, password, visible, modalText, warningText } = this.state;
+    const {name, email, password, visible, modalText, warningText} = this.state;
     return (
       <>
         <View style={styles.container}>
           <Modal
             isVisible={visible}
-            onBackButtonPress={() => this.setState({ visible: false })}>
+            onBackButtonPress={() => this.setState({visible: false})}>
             <View style={styles.modalView}>
               <View style={styles.modalTextView}>
                 <Text>{modalText}</Text>
@@ -85,30 +75,29 @@ class SignUp extends Component {
           </Modal>
           <TextInput
             placeholder="First & Last Name"
-            onChangeText={name => this.setState({ name })}
+            onChangeText={value => this.setState({name: value})}
             value={name}
           />
 
           <TextInput
             keyboardType="email-address"
             placeholder="Email"
-            onChangeText={email => this.setState({ email })}
+            onChangeText={value => this.setState({email: value})}
             value={email}
           />
           <TextInput
             secureTextEntry
             placeholder="Password"
-            onChangeText={password => this.setState({ password })}
+            onChangeText={value => this.setState({password: value})}
             value={password}
           />
-          <View style={{ width: 278 * width, height: 28 * height, alignContent: 'flex-start', marginTop: -3 * height }}>
-            {warningText == '' ? null :
-              <Text style={styles.warningText}>
-                {warningText}
-              </Text>}
+          <View style={styles.warningTextView}>
+            {warningText === '' ? null : (
+              <Text style={styles.warningText}>{warningText}</Text>
+            )}
           </View>
           <Button
-            extraStyle={{ marginTop: 15 * height }}
+            extraStyle={{marginTop: 15 * height}}
             title="Create an Acount"
             onPress={() => this.register(email, password, name)}
           />
@@ -145,13 +134,19 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
+  warningTextView: {
+    width: 278 * width,
+    height: 28 * height,
+    alignContent: 'flex-start',
+    marginTop: -3 * height,
+  },
   warningText: {
     alignSelf: 'center',
     fontFamily: 'roboto',
     fontSize: 12 * width,
     color: '#D43232',
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
 
 const mapDispatchToProps = dispatch => {

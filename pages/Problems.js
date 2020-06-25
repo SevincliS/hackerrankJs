@@ -8,13 +8,17 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-  Image,TouchableHighlight
+  Image,
+  TouchableHighlight,
 } from 'react-native';
 import Modal from 'react-native-modal';
 
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
-import {setCurrentProblem, removeFromLearnedProblemIds} from '../redux/actions/problemsActions';
+import {
+  setCurrentProblem as setCurrentProblemAction,
+  removeFromLearnedProblemIds as removeFromLearnedProblemIdsAction,
+} from '../redux/actions/problemsActions';
 
 import {BannerAd, BannerAdSize, TestIds} from '@react-native-firebase/admob';
 
@@ -22,19 +26,19 @@ const adUnitId = __DEV__
   ? TestIds.BANNER
   : 'ca-app-pub-6543358689178377~8698272277';
 
-const width = parseInt(Dimensions.get('screen').width) / 360;
-const height = parseInt(Dimensions.get('screen').height) / 640;
+const width = parseInt(Dimensions.get('screen').width, 10) / 360;
+const height = parseInt(Dimensions.get('screen').height, 10) / 640;
 
 class Problems extends React.Component {
   constructor(props) {
     super(props);
     const {navigation} = props;
     this.state = {
-      longPressedProblemId:'',
+      longPressedProblemId: '',
       isLoaded: false,
       problems: [],
     };
-    backButton = require('../images/Back.png');
+    let backButton = require('../images/Back.png');
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
@@ -61,7 +65,7 @@ class Problems extends React.Component {
   componentDidUpdate(prevProps) {
     const {learnedProblemIds} = this.props;
     console.log('problems updated');
-    if (learnedProblemIds.length != prevProps.learnedProblemIds.length) {
+    if (learnedProblemIds.length !== prevProps.learnedProblemIds.length) {
       this.loadProblems();
     }
   }
@@ -112,17 +116,14 @@ class Problems extends React.Component {
     this.props.navigation.navigate('ProblemSheet');
   };
   markAsUnLearned = async () => {
-    const {
-      user,
-      removeFromLearnedProblemIds,
-    } = this.props;
+    const {user, removeFromLearnedProblemIds} = this.props;
     const id = this.state.longPressedProblemId;
     const {uid} = user;
-    let updates = {};
     removeFromLearnedProblemIds(id);
     await db()
-      .ref(`users/${uid}/learnedProblems/${id}`).remove()
-    this.setState({modalVisible:false})
+      .ref(`users/${uid}/learnedProblems/${id}`)
+      .remove();
+    this.setState({modalVisible: false});
   };
 
   getEasyCss = learned => {
@@ -133,52 +134,59 @@ class Problems extends React.Component {
     }
   };
   render() {
-    const {problems, problemCount,modalVisible} = this.state;
+    const {problems, modalVisible} = this.state;
     const {status} = this.props;
     return (
       <ScrollView horizontal={false}>
         {problems.map((problem, index) => {
-          let {difficulty, difficultyPoint, name, learned,id} = problem;
+          let {difficulty, difficultyPoint, name, learned, id} = problem;
           let activeStyle = learned ? learnedStyle : unLearnedStyle;
           difficulty = difficulty.toLowerCase();
           return (
             <>
               <TouchableOpacity
-                onLongPress={() => learned ? this.setState({modalVisible: true,longPressedProblemId:id}): null}
+                onLongPress={() =>
+                  learned
+                    ? this.setState({
+                        modalVisible: true,
+                        longPressedProblemId: id,
+                      })
+                    : null
+                }
                 onPress={() => this.openProblemPage(problem)}
                 key={index}
                 style={styles.container}>
-                  <Modal
-                isVisible={modalVisible}
-                onBackdropPress={() => this.setState({modalVisible: false})}>
-                <View style={styles.centeredView}>
-                  <View style={styles.modalView}>
-                    <Text style={styles.modalText}>
-                      Do you want to mark this problem as "UnLearned" ?
-                    </Text>
-                    <View style={styles.buttons}>
-                      <TouchableHighlight
-                        underlayColor="#1BA94C"
-                        style={styles.yesButton}
-                        onPress={() => {
-                          this.markAsUnLearned();
-                        }}>
-                        <Text style={styles.yesText}>YES</Text>
-                      </TouchableHighlight>
-                      <TouchableHighlight
-                        underlayColor="#D50D20"
-                        style={styles.noButton}
-                        onPress={() => this.setState({modalVisible: false})}>
-                        <Text style={styles.noText}>NO</Text>
-                      </TouchableHighlight>
+                <Modal
+                  isVisible={modalVisible}
+                  onBackdropPress={() => this.setState({modalVisible: false})}>
+                  <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                      <Text style={styles.modalText}>
+                        Do you want to mark this problem as "UnLearned" ?
+                      </Text>
+                      <View style={styles.buttons}>
+                        <TouchableHighlight
+                          underlayColor="#1BA94C"
+                          style={styles.yesButton}
+                          onPress={() => {
+                            this.markAsUnLearned();
+                          }}>
+                          <Text style={styles.yesText}>YES</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight
+                          underlayColor="#D50D20"
+                          style={styles.noButton}
+                          onPress={() => this.setState({modalVisible: false})}>
+                          <Text style={styles.noText}>NO</Text>
+                        </TouchableHighlight>
+                      </View>
                     </View>
                   </View>
-                </View>
-              </Modal>
+                </Modal>
                 <ShimmerPlaceHolder
                   style={styles.shimmerProblems}
                   autoRun
-                  visible={name != ''}>
+                  visible={name !== ''}>
                   <View style={activeStyle.card}>
                     <View style={styles.texts}>
                       <Text style={activeStyle.textName}>{name}</Text>
@@ -187,9 +195,9 @@ class Problems extends React.Component {
                           style={{
                             ...activeStyle.textDiff,
                             ...styles[
-                              difficulty == 'easy'
+                              difficulty === 'easy'
                                 ? this.getEasyCss(learned)
-                                : difficulty == 'medium'
+                                : difficulty === 'medium'
                                 ? 'medium'
                                 : 'hard'
                             ],
@@ -210,8 +218,9 @@ class Problems extends React.Component {
                   </View>
                 </ShimmerPlaceHolder>
               </TouchableOpacity>
-              {(index + 1)%5 == 0 ? (
-                <View style={{marginTop: 10 * height,marginBottom:3*height}}>
+              {(index + 1) % 5 === 0 ? (
+                <View
+                  style={{marginTop: 10 * height, marginBottom: 3 * height}}>
                   <BannerAd
                     unitId={adUnitId}
                     size={BannerAdSize.SMART_BANNER}
@@ -238,7 +247,7 @@ const styles = StyleSheet.create({
   shimmerProblems: {
     borderWidth: 0.2 * width,
     marginTop: 10 * height,
-    marginBottom:3*height,
+    marginBottom: 3 * height,
     borderRadius: 7 * width,
     height: 65 * height,
     width: 313 * width,
@@ -264,7 +273,7 @@ const styles = StyleSheet.create({
   hard: {
     color: '#FF0404',
   },
-  
+
   modalView: {
     justifyContent: 'center',
     width: 290 * width,
@@ -337,7 +346,7 @@ const learnedStyle = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     marginTop: 10 * height,
-    marginBottom:3*height,
+    marginBottom: 3 * height,
     backgroundColor: '#1BA94C',
     borderColor: '#000',
     borderWidth: 0.5 * width,
@@ -386,7 +395,7 @@ const unLearnedStyle = StyleSheet.create({
     justifyContent: 'space-between',
     flexDirection: 'row',
     marginTop: 10 * height,
-    marginBottom:3*height,
+    marginBottom: 3 * height,
     backgroundColor: '#fff',
     borderColor: '#000',
     borderWidth: 0.5 * width,
@@ -430,25 +439,25 @@ const unLearnedStyle = StyleSheet.create({
     fontFamily: 'roboto',
     color: '#1BA94C',
   },
-  
 });
 
-mapStateToProps = state => {
+const mapStateToProps = state => {
   const {problems, currentProblemType, learnedProblemIds} = state.problems;
-  const {user} = state
+  const {user} = state;
   const {status} = state.consent;
   return {
     problems,
     currentProblemType,
     learnedProblemIds,
     status,
-    user
+    user,
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
-    setCurrentProblem: problem => dispatch(setCurrentProblem(problem)),
-    removeFromLearnedProblemIds: problemId => dispatch(removeFromLearnedProblemIds(problemId)) 
+    setCurrentProblem: problem => dispatch(setCurrentProblemAction(problem)),
+    removeFromLearnedProblemIds: problemId =>
+      dispatch(removeFromLearnedProblemIdsAction(problemId)),
   };
 };
 

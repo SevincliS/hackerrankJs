@@ -10,30 +10,25 @@ import Problems from './pages/Problems';
 import ProblemSheet from './pages/ProblemSheet';
 
 const Stack = createStackNavigator();
-const height = parseInt(Dimensions.get('screen').height)/640;
-const width = parseInt(parseInt(Dimensions.get('screen').width))/360; 
-
-
+const height = parseInt(Dimensions.get('screen').height, 10) / 640;
+const width = parseInt(Dimensions.get('screen').width, 10) / 360;
 
 class StackNavigator extends React.Component {
   constructor(props) {
     super(props);
   }
-  
+
   render() {
     const {initialRouteName} = this.props;
     return (
       <Stack.Navigator
-        initialRouteName = {initialRouteName}
-        screenOptions={
-          (this.screenOptions)
-        }>
+        initialRouteName={initialRouteName}
+        screenOptions={this.screenOptions}>
         <Stack.Screen
           name="LogIn"
           component={LogIn}
           options={{
             headerShown: false,
-            
           }}
         />
         <Stack.Screen name="SignUp" component={SignUp} />
@@ -49,15 +44,14 @@ class StackNavigator extends React.Component {
     title: 'HackerrankJS',
     headerTitleAlign: 'center',
     headerTitleStyle: {
-      fontSize: (25 * width),
+      fontSize: 25 * width,
       fontFamily: 'roboto',
     },
     headerStyle: {
-      height: (63 * height),
+      height: 63 * height,
       backgroundColor: '#051B27',
     },
-  }
+  };
 }
 
 export default StackNavigator;
-

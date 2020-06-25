@@ -1,12 +1,8 @@
 import React from 'react';
-import {
-  StyleSheet,
-  TextInput as TI,
-  Dimensions
-} from 'react-native';
+import {StyleSheet, TextInput as TI, Dimensions} from 'react-native';
 
-const  width  = parseInt(Dimensions.get('screen').width)/360;
-const  height  = parseInt(Dimensions.get('screen').height)/640
+const width = parseInt(Dimensions.get('screen').width, 10) / 360;
+const height = parseInt(Dimensions.get('screen').height, 10) / 640;
 
 class TextInput extends React.Component {
   constructor(props) {
@@ -14,9 +10,12 @@ class TextInput extends React.Component {
   }
   render() {
     return (
-      <TI placeholderTextColor='#817D7D'{...this.props} style={styles.textInput}>
-      </TI>
-    )
+      <TI
+        placeholderTextColor="#817D7D"
+        {...this.props}
+        style={styles.textInput}
+      />
+    );
   }
 }
 
@@ -33,4 +32,3 @@ const styles = StyleSheet.create({
   },
 });
 export default TextInput;
-
