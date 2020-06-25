@@ -55,7 +55,7 @@ class ProblemSheet extends React.Component {
     const {navigation, currentProblem} = props;
 
     BackHandler.addEventListener('hardwareBackPress', () => {
-      this.setState({modalVisible: true});
+      this.openModal();
       return true;
     });
 
@@ -113,6 +113,15 @@ class ProblemSheet extends React.Component {
     rewarded.load();
     console.log(rewarded);
   }
+
+  openModal = () => {
+    const {currentProblem, navigation} = this.props;
+    if (!currentProblem.learned) {
+      this.setState({modalVisible: true});
+    } else {
+      navigation.goBack();
+    }
+  };
 
   componentDidMount() {
     const {currentProblem} = this.props;
@@ -173,7 +182,7 @@ class ProblemSheet extends React.Component {
     const {navigation} = this.props;
 
     BackHandler.removeEventListener('hardwareBackPress', () => {
-      this.setState({modalVisible: true});
+      this.openModal();
       return true;
     });
     BackHandler.addEventListener('hardwareBackPress', () => {

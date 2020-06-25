@@ -133,12 +133,28 @@ class Problems extends React.Component {
       return 'easy';
     }
   };
+
+  sortProblems = problems => {
+    let learnedProblems = [];
+    let unLearnedProblems = [];
+    problems.forEach(problem => {
+      problem.learned
+        ? learnedProblems.push(problem)
+        : unLearnedProblems.push(problem);
+    });
+    return [
+      ...learnedProblems.sort((a, b) => a.difficultyPoint - b.difficultyPoint),
+      ...unLearnedProblems.sort(
+        (a, b) => a.difficultyPoint - b.difficultyPoint,
+      ),
+    ];
+  };
   render() {
     const {problems, modalVisible} = this.state;
     const {status} = this.props;
     return (
       <ScrollView horizontal={false}>
-        {problems.map((problem, index) => {
+        {this.sortProblems(problems).map((problem, index) => {
           let {difficulty, difficultyPoint, name, learned, id} = problem;
           let activeStyle = learned ? learnedStyle : unLearnedStyle;
           difficulty = difficulty.toLowerCase();

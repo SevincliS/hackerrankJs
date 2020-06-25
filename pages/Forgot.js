@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import auth from '@react-native-firebase/auth';
 import Button from '../components/custom/Button';
 import TextInput from '../components/custom/TextInput';
 
-import {StyleSheet, View, Text, Dimensions} from 'react-native';
+import { StyleSheet, View, Text, Dimensions } from 'react-native';
 
 const height = parseInt(Dimensions.get('screen').height, 10) / 640;
 const width = parseInt(Dimensions.get('screen').width, 10) / 360;
@@ -22,7 +22,7 @@ class Forgot extends Component {
   }
 
   changeWarningText = (warningText, warningColor) => {
-    this.setState({warningText, warningColor});
+    this.setState({ warningText, warningColor });
   };
 
   sendForgotRequest = email => {
@@ -38,31 +38,33 @@ class Forgot extends Component {
           '#1BA94C',
         );
       })
-      .catch(({message}) => {
+      .catch(({ message }) => {
         this.changeWarningText(message.split(']')[1], '#D43232');
       });
   };
 
   render() {
-    const {email, warningText, warningColor} = this.state;
+    const { email, warningText, warningColor } = this.state;
     return (
       <>
         <View style={styles.container}>
+
+
           <TextInput
             keyboardType="email-address"
             placeholder="Your Email"
-            onChangeText={value => this.setState({email: value})}
+            onChangeText={value => this.setState({ email: value })}
             value={email}
           />
           <View style={styles.warningTextView}>
             {warningText === '' ? null : (
-              <Text style={{...styles.warningText, ...{color: warningColor}}}>
+              <Text style={{ ...styles.warningText, ...{ color: warningColor } }}>
                 {warningText}
               </Text>
             )}
           </View>
           <Button
-            extraStyle={{marginTop: 15 * height}}
+            extraStyle={{ marginTop: 15 * height }}
             title="Send a Reset Link"
             onPress={() => this.sendForgotRequest(email)}
           />
