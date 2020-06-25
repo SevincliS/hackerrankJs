@@ -48,8 +48,8 @@ class HomePageCard extends Component {
         title = 'Get More Certificates';
         color = '#84A9AC';
         break;
-      case 'javascript':
-        title = 'JavaScript';
+      case '10DaysJS':
+        title = '10 Days of JavaScript';
         color = '#CAE8D5';
         break;
       case 'machineLearning':

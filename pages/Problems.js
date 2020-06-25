@@ -220,7 +220,10 @@ class Problems extends React.Component {
               </TouchableOpacity>
               {(index + 1) % 5 === 0 ? (
                 <View
-                  style={{marginTop: 10 * height, marginBottom: 3 * height}}>
+                  style={{
+                    marginTop: 10 * height,
+                    marginBottom: 3 * height,
+                  }}>
                   <BannerAd
                     unitId={adUnitId}
                     size={BannerAdSize.SMART_BANNER}

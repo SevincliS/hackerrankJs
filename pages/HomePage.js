@@ -23,7 +23,7 @@ class HomePage extends Component {
       'practice',
       'interview',
       'getMoreCertificates',
-      'javascript',
+      '10DaysJS',
       'machineLearning',
       'certificate',
     ];
