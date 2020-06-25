@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
-    "android-debug": "cd android & gradlew clean & gradlew assembleDebug & cd .. & react-native run-android",
-    "android-release": "cd android & gradlew clean & gradlew assembleRelease & cd .. & react-native run-android --variant=release",
+    "android-debug": "android-debug.bat",
+    "android-release": "android-release.bat",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
