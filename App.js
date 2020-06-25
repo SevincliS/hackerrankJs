@@ -5,9 +5,9 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {Provider} from 'react-redux';
 import {GoogleSignin} from '@react-native-community/google-signin';
 import admob, {MaxAdContentRating} from '@react-native-firebase/admob';
-
 import {store, persistor} from './redux/store/store';
 import Router from './Router.js';
+import Orientation from 'react-native-orientation';
 
 GoogleSignin.configure({
   webClientId:
@@ -16,6 +16,7 @@ GoogleSignin.configure({
 class App extends React.PureComponent {
   constructor(props) {
     super(props);
+    Orientation.lockToPortrait();
     admob()
       .setRequestConfiguration({
         // Update all future requests suitable for parental guidance

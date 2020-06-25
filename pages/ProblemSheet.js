@@ -36,6 +36,7 @@ import {
   RewardedAdEventType,
   TestIds,
 } from '@react-native-firebase/admob';
+import Orientation from 'react-native-orientation';
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
@@ -54,6 +55,7 @@ class ProblemSheet extends React.Component {
     super(props);
     const {navigation, currentProblem} = props;
 
+    Orientation.unlockAllOrientations();
     BackHandler.addEventListener('hardwareBackPress', () => {
       this.openModal();
       return true;
@@ -181,6 +183,7 @@ class ProblemSheet extends React.Component {
   componentWillUnmount() {
     const {navigation} = this.props;
 
+    Orientation.lockToPortrait();
     BackHandler.removeEventListener('hardwareBackPress', () => {
       this.openModal();
       return true;
@@ -216,7 +219,7 @@ class ProblemSheet extends React.Component {
         {spinner ? (
           <ActivityIndicator size="large" color="#051B27" />
         ) : (
-          <ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false}>
             <Modal
               isVisible={clipboardModalVisible}
               onBackdropPress={() =>
