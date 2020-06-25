@@ -173,6 +173,7 @@ class Problems extends React.Component {
                 key={index}
                 style={styles.container}>
                 <Modal
+                  backdropOpacity={0.1}
                   isVisible={modalVisible}
                   onBackdropPress={() => this.setState({modalVisible: false})}>
                   <View style={styles.centeredView}>

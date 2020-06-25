@@ -44,20 +44,20 @@ class HomePageCard extends Component {
         title = 'Interview Preparation Kit';
         color = '#3B6978';
         break;
-      case 'getMoreCertificates':
-        title = 'Get More Certificates';
+      case 'learnCode30Days':
+        title = 'Learn to Code in 30 Days';
         color = '#84A9AC';
         break;
       case '10DaysJS':
         title = '10 Days of JavaScript';
         color = '#CAE8D5';
         break;
-      case 'machineLearning':
-        title = 'Machine Learning';
+      case 'functionalProgramming':
+        title = 'Functional Programming';
         color = '#204051';
         break;
-      case 'certificate':
-        title = 'Certificate';
+      case 'mathematics':
+        title = 'Mathematics';
         color = '#3B6978';
         break;
       default:

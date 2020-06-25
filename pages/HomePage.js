@@ -22,10 +22,10 @@ class HomePage extends Component {
     let problemTypes = [
       'practice',
       'interview',
-      'getMoreCertificates',
+      'learnCode30Days',
       '10DaysJS',
-      'machineLearning',
-      'certificate',
+      'functionalProgramming',
+      'mathematics',
     ];
     let problemData = [];
     problemTypes.forEach(type => {
