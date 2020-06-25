@@ -122,12 +122,8 @@ class ProblemSheet extends React.Component {
       fetch(text).then(problemText => problemText.text()),
       fetch(solution).then(solutionText => solutionText.text()),
     ]).then(([problemText, solutionText]) => {
-      let [splittedProblemText, functionDescription] = problemText.split(
-        'Function Description',
-      );
       this.setState({
-        problemText: splittedProblemText,
-        functionDescription,
+        problemText,
         solutionText,
         spinner: false,
       });
@@ -199,7 +195,6 @@ class ProblemSheet extends React.Component {
     const {spinner} = this.state;
     const {
       problemText,
-      functionDescription,
       solutionText,
       selectedTheme,
       modalVisible,
@@ -228,25 +223,7 @@ class ProblemSheet extends React.Component {
               <Text
                 key={'problemText'}
                 style={{fontSize: 16, fontFamily: 'roboto', margin: 6 * width}}>
-                {' '}
-                {problemText}{' '}
-              </Text>
-              <Text
-                key={'functionDescriptionHeader'}
-                style={{
-                  fontSize: 20,
-                  fontWeight: 'bold',
-                  fontFamily: 'roboto',
-                  marginHorizontal: 6 * height,
-                }}>
-                {' '}
-                Function Description{' '}
-              </Text>
-              <Text
-                key={'functionDescriptionText'}
-                style={{fontSize: 16, fontFamily: 'roboto', margin: 6 * width}}>
-                {' '}
-                {functionDescription}{' '}
+                {problemText}
               </Text>
             </View>
             <View style={styles.pickerView}>
