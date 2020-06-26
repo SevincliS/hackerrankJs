@@ -15,6 +15,7 @@ class TextInput extends React.Component {
         placeholderTextColor="#817D7D"
         {...this.props}
         style={styles.textInput}
+        allowFontScaling={false}
       />
     );
   }

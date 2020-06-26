@@ -7,6 +7,7 @@ import {GoogleSignin} from '@react-native-community/google-signin';
 import admob, {MaxAdContentRating} from '@react-native-firebase/admob';
 import {store, persistor} from './redux/store/store';
 import Router from './Router.js';
+import {Text} from 'react-native';
 import Orientation from 'react-native-orientation';
 
 GoogleSignin.configure({
@@ -36,6 +37,8 @@ class App extends React.PureComponent {
 
   componentDidMount() {
     SplashScreen.hide();
+    Text.defaultProps = Text.defaultProps || {};
+    Text.defaultProps.allowFontScaling = false;
   }
 
   render() {
