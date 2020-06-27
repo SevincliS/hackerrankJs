@@ -36,13 +36,16 @@ class Problems extends React.Component {
     this.state = {
       longPressedProblemId: '',
       isLoaded: false,
+      disabled: false,
       problems: [],
     };
     let backButton = require('../images/Back.png');
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity
+          disabled={this.state.disabled}
           onPress={() => {
+            this.setState({disabled: true});
             navigation.goBack();
           }}>
           <Image
