@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 
+import {ActivityIndicator} from 'react-native';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 
 import {
@@ -37,6 +38,7 @@ class Problems extends React.Component {
       longPressedProblemId: '',
       isLoaded: false,
       disabled: false,
+      spinner: true,
       problems: [],
     };
     let backButton = require('../images/Back.png');
@@ -80,36 +82,25 @@ class Problems extends React.Component {
       .ref(`problems/${currentProblemType}`)
       .once('value')
       .then(problems => {
-        let stateProblems = [];
-        let problemCount = Object.entries(problems.val()).length;
-        for (let i = 0; i < problemCount; i++) {
-          stateProblems.push({
-            difficulty: 'Easy',
-            difficultyPoint: 10,
-            name: '',
-            learned: false,
-          });
-        }
-        this.setState({problemCount, problems: stateProblems}, () => {
-          Object.entries(problems.val()).forEach(([id, value], i) => {
-            if (learnedProblemIds.includes(id)) {
-              this.setState(prevState => ({
-                problems: [
-                  ...prevState.problems.slice(0, i),
-                  {...value, learned: true},
-                  ...prevState.problems.slice(i + 1),
-                ],
-              }));
-            } else {
-              this.setState(prevState => ({
-                problems: [
-                  ...prevState.problems.slice(0, i),
-                  {...value, learned: false},
-                  ...prevState.problems.slice(i + 1),
-                ],
-              }));
-            }
-          });
+        this.setState({spinner: false});
+        Object.entries(problems.val()).forEach(([id, value], i) => {
+          if (learnedProblemIds.includes(id)) {
+            this.setState(prevState => ({
+              problems: [
+                ...prevState.problems.slice(0, i),
+                {...value, learned: true},
+                ...prevState.problems.slice(i + 1),
+              ],
+            }));
+          } else {
+            this.setState(prevState => ({
+              problems: [
+                ...prevState.problems.slice(0, i),
+                {...value, learned: false},
+                ...prevState.problems.slice(i + 1),
+              ],
+            }));
+          }
         });
       });
   };
@@ -154,9 +145,13 @@ class Problems extends React.Component {
     ];
   };
   render() {
-    const {problems, modalVisible} = this.state;
+    const {problems, modalVisible, spinner} = this.state;
     const {status} = this.props;
-    return (
+    return spinner ? (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#051B27" />
+      </View>
+    ) : (
       <ScrollView horizontal={false}>
         {this.sortProblems(problems).map((problem, index) => {
           let {difficulty, difficultyPoint, name, learned, id} = problem;
