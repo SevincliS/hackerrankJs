@@ -128,12 +128,23 @@ class ProblemSheet extends React.Component {
 
   componentDidMount() {
     const {currentProblem} = this.props;
-    const {text, solution} = currentProblem;
+    let {text, solution} = currentProblem;
     this.setState({spinner: true});
     Promise.all([
       fetch(text).then(problemText => problemText.text()),
       fetch(solution).then(solutionText => solutionText.text()),
     ]).then(([problemText, solutionText]) => {
+      let splittedSolutionTexts = solutionText.split('\n');
+      let maxLength = 0;
+      let maxLengthIndex = 0;
+      splittedSolutionTexts.forEach((line, index) => {
+        if (line.length > maxLength) {
+          maxLength = line.length;
+          maxLengthIndex = index;
+        }
+      });
+      splittedSolutionTexts[maxLengthIndex] += '     ';
+      solutionText = splittedSolutionTexts.join('\n');
       this.setState({
         problemText,
         solutionText,
