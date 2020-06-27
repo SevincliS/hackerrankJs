@@ -40,7 +40,7 @@ import Orientation from 'react-native-orientation';
 
 const adUnitId = __DEV__
   ? TestIds.REWARDED
-  : 'ca-app-pub-6543358689178377~8698272277';
+  : 'ca-app-pub-6543358689178377/1541669118';
 
 import {addToLearnedProblemIds as addToLearnedProblemIdsAction} from '../redux/actions/problemsActions';
 const rewarded = RewardedAd.createForAdRequest(adUnitId, {
@@ -69,6 +69,8 @@ class ProblemSheet extends React.Component {
       modalVisible: false,
       clipboardModalVisible: false,
       learned: currentProblem.learned,
+      earned: false,
+      clipboardText: '',
     };
     let backButton = require('../images/Back.png');
     navigation.setOptions({
@@ -96,25 +98,39 @@ class ProblemSheet extends React.Component {
     const {status} = this.props;
     rewarded.requestNonPersonalizedAdsOnly = status;
     this.eventListener = rewarded.onAdEvent((type, error, reward) => {
-      if (type === RewardedAdEventType.LOADED) {
-        this.setState({showRewarded: true});
-        console.log('loaded');
-      }
-      if (type === RewardedAdEventType.EARNED_REWARD) {
+      console.log(type);
+      if (type === 'closed' && this.state.earned) {
         const {solutionText} = this.state;
-        console.log('User earned reward of ', reward);
         this.setState({
           clipboardModalVisible: true,
+          clipboardText: 'Code copied to the clipboard!',
         });
         this.writeToClipboard(solutionText);
-      }
-      if (!rewarded.loaded) {
         rewarded.load();
       }
+      if (type === 'closed' && !this.state.earned) {
+        rewarded.load();
+        this.setState({
+          clipboardModalVisible: true,
+          clipboardText: 'Code did not copy!',
+        });
+        setTimeout(() => {
+          this.setState({
+            clipboardModalVisible: false,
+          });
+        }, 2500);
+      }
+      if (type === RewardedAdEventType.LOADED) {
+        this.setState({showRewarded: true});
+      }
+      if (type === RewardedAdEventType.EARNED_REWARD) {
+        this.setState({earned: true, showRewarded: false});
+      }
+      if (error) {
+        console.log(error);
+      }
     });
-
     rewarded.load();
-    console.log(rewarded);
   }
 
   openModal = () => {
@@ -149,6 +165,7 @@ class ProblemSheet extends React.Component {
         problemText,
         solutionText,
         spinner: false,
+        earned: false,
       });
     });
   }
@@ -188,7 +205,7 @@ class ProblemSheet extends React.Component {
   writeToClipboard = text => {
     Clipboard.setString(text);
     setTimeout(() => {
-      this.setState({clipboardModalVisible: false});
+      this.setState({clipboardModalVisible: false, earned: false});
     }, 2500);
   };
 
@@ -208,8 +225,9 @@ class ProblemSheet extends React.Component {
 
   lastPressedMiliseconds;
   copyCode = () => {
+    let doubleTapMsRange = 400;
     let currentMs = new Date().getMilliseconds();
-    if (Math.abs(this.lastPressedMiliseconds - currentMs) < 200) {
+    if (Math.abs(this.lastPressedMiliseconds - currentMs) < doubleTapMsRange) {
       rewarded.show();
     }
     this.lastPressedMiliseconds = currentMs;
@@ -223,6 +241,7 @@ class ProblemSheet extends React.Component {
       selectedTheme,
       modalVisible,
       clipboardModalVisible,
+      clipboardText,
     } = this.state;
     const {navigation} = this.props;
 
@@ -234,12 +253,13 @@ class ProblemSheet extends React.Component {
           <ScrollView showsVerticalScrollIndicator={false}>
             <Modal
               isVisible={clipboardModalVisible}
+              backdropOpacity={0.1}
               onBackdropPress={() =>
                 this.setState({clipboardModalVisible: false})
               }>
               <View style={styles.clipboardView}>
                 <View style={styles.clipboardModal}>
-                  <Text>Code copied to the clipboard!</Text>
+                  <Text>{clipboardText}</Text>
                 </View>
               </View>
             </Modal>

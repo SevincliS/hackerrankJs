@@ -25,7 +25,7 @@ import {BannerAd, BannerAdSize, TestIds} from '@react-native-firebase/admob';
 
 const adUnitId = __DEV__
   ? TestIds.BANNER
-  : 'ca-app-pub-6543358689178377~8698272277';
+  : 'ca-app-pub-6543358689178377/7920849987';
 
 const width = parseInt(Dimensions.get('screen').width, 10) / 360;
 const height = parseInt(Dimensions.get('screen').height, 10) / 640;
@@ -158,7 +158,7 @@ class Problems extends React.Component {
           let activeStyle = learned ? learnedStyle : unLearnedStyle;
           difficulty = difficulty.toLowerCase();
           return (
-            <>
+            <React.Fragment key={problem.id}>
               <TouchableOpacity
                 onLongPress={() =>
                   learned
@@ -202,6 +202,7 @@ class Problems extends React.Component {
                 <ShimmerPlaceHolder
                   style={styles.shimmerProblems}
                   autoRun
+                  key={problem.id}
                   visible={name !== ''}>
                   <View style={activeStyle.card}>
                     <View style={styles.texts}>
@@ -249,7 +250,7 @@ class Problems extends React.Component {
                   />
                 </View>
               ) : null}
-            </>
+            </React.Fragment>
           );
         })}
       </ScrollView>
