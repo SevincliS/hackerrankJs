@@ -99,7 +99,6 @@ class ProblemSheet extends React.Component {
     const {status} = this.props;
     rewarded.requestNonPersonalizedAdsOnly = status;
     this.eventListener = rewarded.onAdEvent((type, error, reward) => {
-      console.log(type);
       if (type === 'closed' && this.state.earned) {
         const {solutionText} = this.state;
         this.setState({
@@ -128,7 +127,6 @@ class ProblemSheet extends React.Component {
         this.setState({earned: true, showRewarded: false});
       }
       if (error) {
-        console.log(error);
       }
     });
   }
