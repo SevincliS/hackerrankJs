@@ -55,6 +55,7 @@ class ProblemSheet extends React.Component {
     super(props);
     const {navigation, currentProblem} = props;
 
+    rewarded.load();
     Orientation.unlockAllOrientations();
     BackHandler.addEventListener('hardwareBackPress', () => {
       this.openModal();
@@ -130,7 +131,6 @@ class ProblemSheet extends React.Component {
         console.log(error);
       }
     });
-    rewarded.load();
   }
 
   openModal = () => {
@@ -224,13 +224,19 @@ class ProblemSheet extends React.Component {
   }
 
   lastPressedMiliseconds;
+  lastPressedSeconds;
   copyCode = () => {
     let doubleTapMsRange = 400;
     let currentMs = new Date().getMilliseconds();
-    if (Math.abs(this.lastPressedMiliseconds - currentMs) < doubleTapMsRange) {
+    let currentS = new Date().getSeconds();
+    if (
+      Math.abs(this.lastPressedMiliseconds - currentMs) < doubleTapMsRange &&
+      Math.abs(currentS - this.lastPressedSeconds) < 2
+    ) {
       rewarded.show();
     }
     this.lastPressedMiliseconds = currentMs;
+    this.lastPressedSeconds = currentS;
   };
 
   render() {
