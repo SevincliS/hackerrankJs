@@ -9,6 +9,7 @@ import {store, persistor} from './redux/store/store';
 import Router from './Router.js';
 import {Text} from 'react-native';
 import Orientation from 'react-native-orientation';
+console.disableYellowBox = true;
 
 GoogleSignin.configure({
   webClientId:

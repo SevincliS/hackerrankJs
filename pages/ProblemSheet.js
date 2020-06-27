@@ -356,8 +356,8 @@ const styles = StyleSheet.create({
   clipboardView: {
     flex: 1,
     justifyContent: 'flex-end',
+    alignSelf: 'center',
     marginBottom: 15 * height,
-    marginLeft: 78 * width,
   },
   clipboardModal: {
     justifyContent: 'center',
