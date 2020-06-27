@@ -46,6 +46,7 @@ class Problems extends React.Component {
             navigation.goBack();
           }}>
           <Image
+            resizeMode="contain"
             style={{
               marginLeft: 28 * width,
               width: width * 19,

@@ -12,7 +12,7 @@ export default class LogOutButton extends Component {
   render() {
     return (
       <TouchableOpacity {...this.props}>
-        <Image source={this.image} style={styles.Icon} />
+        <Image resizeMode="contain" source={this.image} style={styles.Icon} />
       </TouchableOpacity>
     );
   }

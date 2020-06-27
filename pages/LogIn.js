@@ -185,6 +185,7 @@ class LogIn extends React.Component {
                 })
             }>
             <Image
+              resizeMode="contain"
               style={styles.googleIcon}
               source={require('../images/googleicon.png')}
             />

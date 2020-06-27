@@ -82,6 +82,7 @@ class ProblemSheet extends React.Component {
             }
           }}>
           <Image
+            resizeMode="contain"
             style={{
               marginLeft: 28 * width,
               width: width * 19,
@@ -244,6 +245,7 @@ class ProblemSheet extends React.Component {
                   Double tap code for copy
                 </Text>
                 <Image
+                  resizeMode="contain"
                   style={styles.downArrow}
                   source={require('../images/Down.png')}
                 />
