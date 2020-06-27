@@ -50,15 +50,15 @@ class HomePageCard extends Component {
         break;
       case '10DaysJS':
         title = '10 Days of JavaScript';
-        color = '#CAE8D5';
+        color = '#204051';
         break;
       case 'functionalProgramming':
         title = 'Functional Programming';
-        color = '#204051';
+        color = '#3B6978';
         break;
       case 'mathematics':
         title = 'Mathematics';
-        color = '#3B6978';
+        color = '#84A9AC';
         break;
       default:
         title = 'Unknown Type';
