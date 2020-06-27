@@ -24,7 +24,7 @@ class HomePage extends Component {
       'interview',
       'learnCode30Days',
       '10DaysJS',
-      'functionalProgramming',
+      'statistics',
       'mathematics',
     ];
     let problemData = [];
